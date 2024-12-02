@@ -1,0 +1,7 @@
+# BOARD
+
+1) Event should be emited to the backend that users have started and emit the turn and other data like the initial BOARD
+2) After die roll, handle the random die roll send the die roll value to the client.
+3) After client selects the piece to move, make the move on the board in the backend with all the rules and update the game state accordingly.
+4) Emit the board and pieces data to the client.
+

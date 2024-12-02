@@ -1,16 +1,39 @@
-import express from "express";
+import express, { json } from "express";
 import cors from "cors";
-import { config } from "dotenv";
+import { config, populate } from "dotenv";
 import { WebSocket, WebSocketServer } from "ws";
 import http from "http";
 import roomRouter from "./routes/room.route";
+import { LUDO_BOARD } from "./constants/board";
+import { Piece, PIECES } from "./constants/pieces";
 
 config();
+
+enum Color {
+    red = "red",
+    blue = "blue",
+    green = "green",
+    yellow = "yellow"
+}
+
+type UserData = {
+    ws: WebSocket,
+    admin: boolean,
+    turn: boolean
+    name: string,
+    color: Color
+}
+
+type GameData = {
+    board: Array<Array<string>>,
+    users: Array<UserData>,
+    pieces: Record<string, Array<Piece>>
+}
 
 const port = process.env.PORT || 5000;
 
 const app = express();
-const games: Record<string, Array<WebSocket>> = {};
+const games: Record<string, GameData> = {};
 
 app.use(express.json());
 app.use(cors());
@@ -29,19 +52,26 @@ wss.on("connection", (ws) => {
 
             switch (jsonData.type) {
                 case "join_room": {
-                    const { roomId } = jsonData;
-
+                    const { roomId, playerName } = jsonData;
+                    const colors = [Color.red, Color.blue, Color.green, Color.yellow]
+                    const colorForUser = colors[games[roomId].users.length]
                     // Add the WebSocket to the specified room
+                    if (games[roomId].users && games[roomId].users.length === 4) {
+                        ws.send(JSON.stringify({ type: "players", success: false, message: "Maximum of 4 players can play this game" }))
+                        break;
+                    }
                     // if (!games[roomId]) ws.send(JSON.stringify({ type: "players", message: "Room does not exist!" }))
-                    games[roomId] = [...(games[roomId] || []), ws];
+                    if (!games[roomId].users) games[roomId].users = [...(games[roomId].users || []), { ws: ws, turn: true, admin: true, name: playerName, color: colorForUser }];
+                    else games[roomId].users = [...(games[roomId].users || []), { ws: ws, turn: false, admin: false, name: playerName, color: colorForUser }];
 
                     // Prepare the list of players (could use unique identifiers later)
-                    const players = games[roomId].map((_, index) => `Player ${index + 1}`);
+                    const players = games[roomId].users.map((player) => player.name);
+                    console.log(players);
 
                     // Broadcast the updated player list to all players in the room
-                    games[roomId].forEach((client) => {
-                        if (client.readyState === WebSocket.OPEN) {
-                            client.send(JSON.stringify({ type: "players", data: players, success: true }));
+                    games[roomId].users.forEach((client) => {
+                        if (client.ws.readyState === WebSocket.OPEN) {
+                            client.ws.send(JSON.stringify({ type: "players", data: players, success: true, isAdmin: client.admin }));
                         }
                     });
 
@@ -50,17 +80,44 @@ wss.on("connection", (ws) => {
 
                 case "start_game": {
                     const { gameId } = jsonData
-                    const players = games[gameId].length
+                    const players = games[gameId].users.length
                     if (players === 4) {
-                        games[gameId].forEach((client) => {
-                            if (client.readyState === WebSocket.OPEN) {
-                                client.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck" }));
+                        games[gameId].users.forEach((client) => {
+                            if (client.ws.readyState === WebSocket.OPEN) {
+                                client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId }));
+                                client.ws.send(JSON.stringify({ type: "board_event", success: true, board: LUDO_BOARD, turn: client.turn }));
                             }
                         });
                     } else {
                         ws.send(JSON.stringify({ type: "start_game", success: false, message: "You need 4 players to start a game" }))
                     }
                     break;
+                }
+
+                case "roll_die": {
+                    const { gameId } = jsonData
+                    const dieRoll = Math.floor(Math.random() * 6) + 1
+                    console.log(dieRoll);
+                    const user = games[gameId].users.find(player => player.turn)
+                    if (user) {
+                        games[gameId].users.forEach(client => {
+                            client.ws.send(JSON.stringify({ type: "roll_die", roll: dieRoll, user: user.name, turn: user.turn  }))
+                        })
+                    }
+                    
+                }
+
+                case "make_move": {
+                    const { gameId, dieRoll, piece } = jsonData
+                    const currentBoardState = games[gameId].board
+                    const pieces = games[gameId].pieces
+                    const user = games[gameId].users.find(user => user.turn)
+                    if (user) {
+                        const colour = user.color
+                        // const piecesPlace = pieces[colour].some(p => p.position !== -1)
+                    }
+                    const currentPlayer = games[gameId].users.find(player => player.turn)
+                    
                 }
 
                 default:
@@ -83,18 +140,18 @@ wss.on("connection", (ws) => {
 
         // Remove the WebSocket from all rooms
         Object.keys(games).forEach((roomId) => {
-            games[roomId] = games[roomId].filter((client) => client !== ws);
+            games[roomId].users = games[roomId].users.filter((client) => client.ws !== ws);
 
             // Broadcast updated player list to the remaining clients in the room
-            const players = games[roomId].map((_, index) => `Player ${index + 1}`);
-            games[roomId].forEach((client) => {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(JSON.stringify({ type: "players", data: players, success: true }));
+            const players = games[roomId].users.map((player) => player.name);
+            games[roomId].users.forEach((client) => {
+                if (client.ws.readyState === WebSocket.OPEN) {
+                    client.ws.send(JSON.stringify({ type: "players", data: players, success: true, isAdmin: client.admin }));
                 }
             });
 
             // Clean up empty rooms
-            if (games[roomId].length === 0) {
+            if (games[roomId].users.length === 0) {
                 delete games[roomId];
             }
         });

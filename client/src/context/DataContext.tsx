@@ -2,6 +2,8 @@ import { createContext, Dispatch, SetStateAction } from "react";
 
 export type DataType = {
   players: string[] | null;
+  isAdmin: boolean
+  name: string
 };
 type DataContext = {
   data: DataType;
@@ -9,6 +11,6 @@ type DataContext = {
 };
 
 export const DataContext = createContext<DataContext>({
-  data: { players: null },
+  data: { players: null, isAdmin: false, name: "" },
   setData: () => {},
 });

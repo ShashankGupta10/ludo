@@ -13,13 +13,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { DataContext } from "@/context/DataContext";
 
 const Home = () => {
   const [roomId, setRoomId] = useState("")
+  // const [name, setName] = useState("")
+  const { data, setData } = useContext(DataContext)
   const navigate = useNavigate();
   
   const createRoom = async () => {
+    // setData({ ...data, name: name })
     const response = await axios.post(
       "http://localhost:5000/api/v1/room/create"
     );
@@ -51,9 +55,21 @@ const Home = () => {
                 onChange={(e) => setRoomId(e.target.value)}
               />
             </div>
+            <div className="grid flex-1 gap-2">
+              <Label htmlFor="link" className="sr-only">
+                Name
+              </Label>
+              <Input
+                id="name"
+                placeholder="Enter your name..."
+                value={data.name}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
+              />
+            </div>
           </div>
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
+
               <Button type="button" variant="default" className="ml-auto" onClick={() => navigate(`/waiting-area/${roomId}`)}>
                 Join Room
               </Button>

@@ -11,32 +11,35 @@ const WaitingArea = () => {
   const navigate = useNavigate();
 
   const startGame = () => {
-    const data = {
+    const startGameData = {
       type: "start_game",
       gameId: gameId,
     };
 
-    websocket?.send(JSON.stringify(data));
+    websocket?.send(JSON.stringify(startGameData));
   };
 
   // Function to send data to the WebSocket
-  const sendData = useCallback((ws: WebSocket, data: string) => {
+  const sendData = useCallback((ws: WebSocket, dataToSend: string) => {
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(data);
+      ws.send(dataToSend);
+      // clearTimeout()
     } else {
-      setTimeout(() => sendData(ws, data), 10); // Retry sending if WebSocket isn't open
+      setTimeout(() => sendData(ws, dataToSend), 10); // Retry sending if WebSocket isn't open
+      console.log("DONE, WAITING");
     }
   }, []);
 
   useEffect(() => {
     if (gameId) {
-      const data = {
+      const joinRoomData = {
         type: "join_room",
         roomId: gameId,
+        playerName: data.name
       };
 
       // Send data when the WebSocket connection opens
-      if (websocket) sendData(websocket, JSON.stringify(data));
+      if (websocket) sendData(websocket, JSON.stringify(joinRoomData));
 
       // return () => {
       //   websocket?.close();
@@ -53,7 +56,7 @@ const WaitingArea = () => {
           <li key={index}>{player}</li>
         ))}
       </ul>
-      <Button onClick={startGame}>Start Game</Button>
+      {data.isAdmin && <Button onClick={startGame}>Start Game</Button>}
     </>
   );
 };
