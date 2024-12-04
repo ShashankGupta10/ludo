@@ -1,100 +1,85 @@
-export type BoardSquare = {
-    colour: string;
-    id: string;
+import { v4 as uuid } from "uuid";
+type CellType = "neutral" | "home" | "win" | "path";
+type CellColor = "red" | "blue" | "green" | "yellow" | null;
+
+export interface Cell {
+    type: CellType;
+    color: CellColor;
+    next: string | null;
+    colorPath: Cell | null;
+    id: string
 }
 
-export const LUDO_BOARD: Array<Array<BoardSquare>> = [
-    [
-        { colour: "red", id: "r1" }, { colour: "red", id: "r2" }, { colour: "red", id: "r3" }, { colour: "red", id: "r4" }, { colour: "red", id: "r5" }, { colour: "red", id: "r6" },
-        { colour: "white", id: "1" }, { colour: "white", id: "2" }, { colour: "white", id: "3" },
-        { colour: "yellow", id: "y1" }, { colour: "yellow", id: "y2" }, { colour: "yellow", id: "y3" }, { colour: "yellow", id: "y4" }, { colour: "yellow", id: "y5" }, { colour: "yellow", id: "y6" }
-    ],
-    [
-        { colour: "red", id: "r7" }, { colour: "red", id: "r8" }, { colour: "red", id: "r9" }, { colour: "red", id: "r10" }, { colour: "red", id: "r11" }, { colour: "red", id: "r12" },
-        { colour: "white", id: "4" }, { colour: "yellow", id: "5" }, { colour: "yellow", id: "6" },
-        { colour: "yellow", id: "y7" }, { colour: "yellow", id: "y8" }, { colour: "yellow", id: "y9" }, { colour: "yellow", id: "y10" }, { colour: "yellow", id: "y11" }, { colour: "yellow", id: "y12" }
-    ],
-    [
-        { colour: "red", id: "r13" }, { colour: "red", id: "r14" }, { colour: "red", id: "r15" }, { colour: "red", id: "r16" }, { colour: "red", id: "r17" }, { colour: "red", id: "r18" },
-        { colour: "white", id: "7" }, { colour: "yellow", id: "8" }, { colour: "white", id: "9" },
-        { colour: "yellow", id: "y13" }, { colour: "yellow", id: "y14" }, { colour: "yellow", id: "y15" }, { colour: "yellow", id: "y16" }, { colour: "yellow", id: "y17" }, { colour: "yellow", id: "y18" }
-    ],
-    [
-        { colour: "red", id: "r19" }, { colour: "red", id: "r20" }, { colour: "red", id: "r21" }, { colour: "red", id: "r22" }, { colour: "red", id: "r23" }, { colour: "red", id: "r24" },
-        { colour: "white", id: "10" }, { colour: "yellow", id: "11" }, { colour: "white", id: "12" },
-        { colour: "yellow", id: "y19" }, { colour: "yellow", id: "y20" }, { colour: "yellow", id: "y21" }, { colour: "yellow", id: "y22" }, { colour: "yellow", id: "y23" }, { colour: "yellow", id: "y24" }
-    ],
-    [
-        { colour: "red", id: "r25" }, { colour: "red", id: "r26" }, { colour: "red", id: "r27" }, { colour: "red", id: "r28" }, { colour: "red", id: "r29" }, { colour: "red", id: "r30" },
-        { colour: "white", id: "13" }, { colour: "yellow", id: "14" }, { colour: "white", id: "15" },
-        { colour: "yellow", id: "y25" }, { colour: "yellow", id: "y26" }, { colour: "yellow", id: "y27" }, { colour: "yellow", id: "y28" }, { colour: "yellow", id: "y29" }, { colour: "yellow", id: "y30" }
-    ],
-    [
-        { colour: "red", id: "r31" }, { colour: "red", id: "r32" }, { colour: "red", id: "r33" }, { colour: "red", id: "r34" }, { colour: "red", id: "r35" }, { colour: "red", id: "r36" },
-        { colour: "white", id: "16" }, { colour: "yellow", id: "17" }, { colour: "white", id: "18" },
-        { colour: "yellow", id: "y31" }, { colour: "yellow", id: "y32" }, { colour: "yellow", id: "y33" }, { colour: "yellow", id: "y34" }, { colour: "yellow", id: "y35" }, { colour: "yellow", id: "y36" }
-    ],
-    [
-        { colour: "white", id: "19" }, { colour: "red", id: "20" }, { colour: "white", id: "21" },
-        { colour: "white", id: "22" }, { colour: "white", id: "23" }, { colour: "white", id: "24" }, { colour: "win", id: "win1" }, { colour: "win", id: "win2" },
-        { colour: "win", id: "win3" },
-        { colour: "white", id: "25" }, { colour: "white", id: "26" }, { colour: "white", id: "27" },
-        { colour: "white", id: "28" }, { colour: "white", id: "29" }, { colour: "white", id: "30" },
-    ],
-    [
-        { colour: "white", id: "31" }, { colour: "red", id: "32" }, { colour: "red", id: "33" },
-        { colour: "red", id: "34" }, { colour: "red", id: "35" }, { colour: "red", id: "36" }, { colour: "win", id: "win4" }, { colour: "win", id: "win5" },
-        { colour: "win", id: "win6" },
-        { colour: "green", id: "37" }, { colour: "green", id: "38" }, { colour: "green", id: "39" },
-        { colour: "green", id: "40" }, { colour: "green", id: "41" }, { colour: "white", id: "42" },
-    ],
-    [
-        { colour: "white", id: "43" }, { colour: "white", id: "44" }, { colour: "white", id: "45" },
-        { colour: "white", id: "46" }, { colour: "white", id: "47" }, { colour: "white", id: "48" }, { colour: "win", id: "win5" }, { colour: "win", id: "win6" },
-        { colour: "win", id: "win7" },
-        { colour: "white", id: "49" }, { colour: "white", id: "50" }, { colour: "white", id: "51" },
-        { colour: "white", id: "52" }, { colour: "green", id: "53" }, { colour: "white", id: "54" },
-    ],
-    [
-        { colour: "blue", id: "b1" }, { colour: "blue", id: "b2" }, { colour: "blue", id: "b3" },
-        { colour: "blue", id: "b4" }, { colour: "blue", id: "b5" }, { colour: "blue", id: "b6" },
-        { colour: "white", id: "55" }, { colour: "blue", id: "56" }, { colour: "white", id: "57" },
-        { colour: "green", id: "g1" }, { colour: "green", id: "g2" }, { colour: "green", id: "g3" },
-        { colour: "green", id: "g4" }, { colour: "green", id: "g5" }, { colour: "green", id: "g6" }
-    ],
-    [
-        { colour: "blue", id: "b7" }, { colour: "blue", id: "b8" }, { colour: "blue", id: "b9" },
-        { colour: "blue", id: "b10" }, { colour: "blue", id: "b11" }, { colour: "blue", id: "b12" },
-        { colour: "white", id: "58" }, { colour: "blue", id: "59" }, { colour: "white", id: "60" },
-        { colour: "green", id: "g7" }, { colour: "green", id: "g8" }, { colour: "green", id: "g9" },
-        { colour: "green", id: "g10" }, { colour: "green", id: "g11" }, { colour: "green", id: "g12" }
-    ],
-    [
-        { colour: "blue", id: "b13" }, { colour: "blue", id: "b14" }, { colour: "blue", id: "b15" },
-        { colour: "blue", id: "b16" }, { colour: "blue", id: "b17" }, { colour: "blue", id: "b18" },
-        { colour: "white", id: "61" }, { colour: "blue", id: "62" }, { colour: "white", id: "63" },
-        { colour: "green", id: "g13" }, { colour: "green", id: "g14" }, { colour: "green", id: "g15" },
-        { colour: "green", id: "g16" }, { colour: "green", id: "g17" }, { colour: "green", id: "g18" }
-    ],
-    [
-        { colour: "blue", id: "b19" }, { colour: "blue", id: "b20" }, { colour: "blue", id: "b21" },
-        { colour: "blue", id: "b22" }, { colour: "blue", id: "b23" }, { colour: "blue", id: "b24" },
-        { colour: "white", id: "64" }, { colour: "blue", id: "65" }, { colour: "white", id: "66" },
-        { colour: "green", id: "g19" }, { colour: "green", id: "g20" }, { colour: "green", id: "g21" },
-        { colour: "green", id: "g22" }, { colour: "green", id: "g23" }, { colour: "green", id: "g24" }
-    ],
-    [
-        { colour: "blue", id: "b25" }, { colour: "blue", id: "b26" }, { colour: "blue", id: "b27" },
-        { colour: "blue", id: "b28" }, { colour: "blue", id: "b29" }, { colour: "blue", id: "b30" },
-        { colour: "blue", id: "67" }, { colour: "blue", id: "68" }, { colour: "white", id: "69" },
-        { colour: "green", id: "g25" }, { colour: "green", id: "g26" }, { colour: "green", id: "g27" },
-        { colour: "green", id: "g28" }, { colour: "green", id: "g29" }, { colour: "green", id: "g30" }
-    ],
-    [
-        { colour: "blue", id: "b31" }, { colour: "blue", id: "b32" }, { colour: "blue", id: "b33" },
-        { colour: "blue", id: "b34" }, { colour: "blue", id: "b35" }, { colour: "blue", id: "b36" },
-        { colour: "white", id: "70" }, { colour: "white", id: "71" }, { colour: "white", id: "72" },
-        { colour: "green", id: "g31" }, { colour: "green", id: "g32" }, { colour: "green", id: "g33" },
-        { colour: "green", id: "g34" }, { colour: "green", id: "g35" }, { colour: "green", id: "g36" }
-    ]
+export const BOARD: Cell[][] = Array.from({ length: 15 }, (_, row) =>
+    Array.from({ length: 15 }, (_, col) => ({
+        type: "neutral" as CellType,
+        color: null as CellColor,
+        next: null,
+        colorPath: null,
+        id: uuid()
+    }))
+);
+
+// Define home areas
+function setupHomeArea(startRow: number, startCol: number, color: CellColor): void {
+    for (let i = startRow; i < startRow + 6; i++) {
+        for (let j = startCol; j < startCol + 6; j++) {
+            BOARD[i][j] = { type: "home", color, next: null, colorPath: null, id: uuid() };
+        }
+    }
+}
+
+// Assign home areas
+setupHomeArea(0, 0, "red"); // Top-left
+setupHomeArea(0, 9, "blue"); // Top-right
+setupHomeArea(9, 0, "green"); // Bottom-left
+setupHomeArea(9, 9, "yellow"); // Bottom-right
+
+// Define win area
+for (let i = 6; i < 9; i++) {
+    for (let j = 6; j < 9; j++) {
+        BOARD[i][j] = { type: "win", color: null, next: null, colorPath: null, id: uuid() };
+    }
+}
+
+// Define neutral path (static linking example for clockwise path)
+const neutralPathIndices: [number, number][] = [
+    [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [6, 5],
+    [5, 5], [4, 5], [3, 5], [2, 5], [1, 5], [0, 5],
+    [0, 6], [0, 7], [0, 8], [0, 9], [1, 9], [2, 9],
+    [3, 9], [4, 9], [5, 9], [6, 9], [6, 10], [6, 11],
+    [6, 12], [6, 13], [6, 14], [7, 14], [8, 14], [9, 14],
+    [9, 13], [9, 12], [9, 11], [9, 10], [9, 9], [10, 9],
+    [11, 9], [12, 9], [13, 9], [14, 9], [14, 8], [14, 7],
+    [14, 6], [14, 5], [13, 5], [12, 5], [11, 5], [10, 5],
+    [9, 5], [9, 4], [9, 3], [9, 2], [9, 1], [9, 0],
+    [8, 0], [7, 0]
 ];
+
+for (let i = 0; i < neutralPathIndices.length; i++) {
+    const [row, col] = neutralPathIndices[i];
+    BOARD[row][col] = { type: "neutral", color: null, next: null, colorPath: null, id: uuid() };
+    if (i > 0) {
+        const [prevRow, prevCol] = neutralPathIndices[i - 1];
+        BOARD[prevRow][prevCol].next = BOARD[row][col].id;
+    }
+}
+
+// Define color-specific paths
+function setupColorPath(color: CellColor, startRow: number, startCol: number, deltaRow: number, deltaCol: number): void {
+    let currentCell = BOARD[startRow][startCol];
+    for (let i = 0; i < 5; i++) {
+        const row = startRow + i * deltaRow;
+        const col = startCol + i * deltaCol;
+        BOARD[row][col].type = "path";
+        BOARD[row][col].color = color;
+        currentCell.colorPath = BOARD[row][col];
+        currentCell = BOARD[row][col];
+    }
+}
+
+// Define color paths leading to win area
+setupColorPath("red", 6, 1, 0, 1); // Red path
+setupColorPath("blue", 1, 8, 1, 0); // Blue path
+setupColorPath("green", 8, 13, 0, -1); // Green path
+setupColorPath("yellow", 13, 6, -1, 0); // Yellow path

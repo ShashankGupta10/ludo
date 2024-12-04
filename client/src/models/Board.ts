@@ -2,7 +2,7 @@ import { BoardSquare, LUDO_BOARD, Piece, PIECES } from "../constants/board";
 
 class Board {
     board: Array<Array<BoardSquare>>;
-    pieces: Record<string, Array<Piece>>;
+    pieces: Array<Piece>;
     gameId: string;
     
     constructor(gameId: string) {

@@ -1,133 +1,1716 @@
 export type Piece = {
-    id: number;
     position: string;
+    color: PieceColor,
+    home: string
 }
 
 
 export type BoardSquare = {
-    colour: string;
+    type: "neutral" | "home" | "win"
+    color: CellColor;
+    next: string | null
+    colorPath: string | null
     id: string;
+}
+
+type CellType = "neutral" | "home" | "win" | "path";
+type CellColor = "red" | "blue" | "green" | "yellow" | null;
+type PieceColor = "red" | "blue" | "green" | "yellow"
+
+export interface Cell {
+    type: CellType;
+    color: CellColor;
+    next: Cell | null;
+    colorPath: Cell | null;
 }
 
 export const LUDO_BOARD: Array<Array<BoardSquare>> = [
     [
-        { colour: "red", id: "r1" }, { colour: "red", id: "r2" }, { colour: "red", id: "r3" }, { colour: "red", id: "r4" }, { colour: "red", id: "r5" }, { colour: "red", id: "r6" },
-        { colour: "white", id: "1" }, { colour: "white", id: "2" }, { colour: "white", id: "3" },
-        { colour: "yellow", id: "y1" }, { colour: "yellow", id: "y2" }, { colour: "yellow", id: "y3" }, { colour: "yellow", id: "y4" }, { colour: "yellow", id: "y5" }, { colour: "yellow", id: "y6" }
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "a1"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "a2"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "a3"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "a4"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "a5"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "a6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "a8",
+            "colorPath": null,
+            "id": "a7"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "a9",
+            "colorPath": null,
+            "id": "a8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "b9",
+            "colorPath": null,
+            "id": "a9"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "a10"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "a11"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "a12"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "a13"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "a14"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "a15"
+        }
     ],
     [
-        { colour: "red", id: "r7" }, { colour: "red", id: "r8" }, { colour: "red", id: "r9" }, { colour: "red", id: "r10" }, { colour: "red", id: "r11" }, { colour: "red", id: "r12" },
-        { colour: "white", id: "4" }, { colour: "yellow", id: "5" }, { colour: "yellow", id: "6" },
-        { colour: "yellow", id: "y7" }, { colour: "yellow", id: "y8" }, { colour: "yellow", id: "y9" }, { colour: "yellow", id: "y10" }, { colour: "yellow", id: "y11" }, { colour: "yellow", id: "y12" }
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "b1"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "b2"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "b3"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "b4"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "b5"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "b6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "a7",
+            "colorPath": null,
+            "id": "b7"
+        },
+        {
+            "type": "neutral",
+            "color": "blue",
+            "next": "c8",
+            "colorPath": null,
+            "id": "b8"
+        },
+        {
+            "type": "neutral",
+            "color": "blue",
+            "next": "c9",
+            "colorPath": null,
+            "id": "b9"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "b10"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "b11"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "b12"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "b13"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "b14"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "b15"
+        }
     ],
     [
-        { colour: "red", id: "r13" }, { colour: "red", id: "r14" }, { colour: "red", id: "r15" }, { colour: "red", id: "r16" }, { colour: "red", id: "r17" }, { colour: "red", id: "r18" },
-        { colour: "white", id: "7" }, { colour: "yellow", id: "8" }, { colour: "white", id: "9" },
-        { colour: "yellow", id: "y13" }, { colour: "yellow", id: "y14" }, { colour: "yellow", id: "y15" }, { colour: "yellow", id: "y16" }, { colour: "yellow", id: "y17" }, { colour: "yellow", id: "y18" }
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "c1"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "c2"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "c3"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "c4"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "c5"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "c6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "b7",
+            "colorPath": null,
+            "id": "c7"
+        },
+        {
+            "type": "neutral",
+            "color": "blue",
+            "next": "d8",
+            "colorPath": null,
+            "id": "c8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "d9",
+            "colorPath": null,
+            "id": "c9"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "c10"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "c11"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "c12"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "c13"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "c14"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "c15"
+        }
     ],
     [
-        { colour: "red", id: "r19" }, { colour: "red", id: "r20" }, { colour: "red", id: "r21" }, { colour: "red", id: "r22" }, { colour: "red", id: "r23" }, { colour: "red", id: "r24" },
-        { colour: "white", id: "10" }, { colour: "yellow", id: "11" }, { colour: "white", id: "12" },
-        { colour: "yellow", id: "y19" }, { colour: "yellow", id: "y20" }, { colour: "yellow", id: "y21" }, { colour: "yellow", id: "y22" }, { colour: "yellow", id: "y23" }, { colour: "yellow", id: "y24" }
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "d1"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "d2"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "d3"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "d4"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "d5"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "d6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "c7",
+            "colorPath": null,
+            "id": "d7"
+        },
+        {
+            "type": "neutral",
+            "color": "blue",
+            "next": "e8",
+            "colorPath": null,
+            "id": "d8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "e9",
+            "colorPath": null,
+            "id": "d9"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "d10"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "d11"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "d12"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "d13"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "d14"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "d15"
+        }
     ],
     [
-        { colour: "red", id: "r25" }, { colour: "red", id: "r26" }, { colour: "red", id: "r27" }, { colour: "red", id: "r28" }, { colour: "red", id: "r29" }, { colour: "red", id: "r30" },
-        { colour: "white", id: "13" }, { colour: "yellow", id: "14" }, { colour: "white", id: "15" },
-        { colour: "yellow", id: "y25" }, { colour: "yellow", id: "y26" }, { colour: "yellow", id: "y27" }, { colour: "yellow", id: "y28" }, { colour: "yellow", id: "y29" }, { colour: "yellow", id: "y30" }
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "e1"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "e2"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "e3"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "e4"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "e5"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "e6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "d7",
+            "colorPath": null,
+            "id": "e7"
+        },
+        {
+            "type": "neutral",
+            "color": "blue",
+            "next": "f8",
+            "colorPath": null,
+            "id": "e8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "f9",
+            "colorPath": null,
+            "id": "e9"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "e10"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "e11"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "e12"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "e13"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "e14"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "e15"
+        }
     ],
     [
-        { colour: "red", id: "r31" }, { colour: "red", id: "r32" }, { colour: "red", id: "r33" }, { colour: "red", id: "r34" }, { colour: "red", id: "r35" }, { colour: "red", id: "r36" },
-        { colour: "white", id: "16" }, { colour: "yellow", id: "17" }, { colour: "white", id: "18" },
-        { colour: "yellow", id: "y31" }, { colour: "yellow", id: "y32" }, { colour: "yellow", id: "y33" }, { colour: "yellow", id: "y34" }, { colour: "yellow", id: "y35" }, { colour: "yellow", id: "y36" }
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "f1"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "f2"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "f3"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "f4"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "f5"
+        },
+        {
+            "type": "home",
+            "color": "red",
+            "next": null,
+            "colorPath": null,
+            "id": "f6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "e7",
+            "colorPath": null,
+            "id": "f7"
+        },
+        {
+            "type": "neutral",
+            "color": "blue",
+            "next": "win",
+            "colorPath": null,
+            "id": "f8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g10",
+            "colorPath": null,
+            "id": "f9"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "f10"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "f11"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "f12"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "f13"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "f14"
+        },
+        {
+            "type": "home",
+            "color": "blue",
+            "next": null,
+            "colorPath": null,
+            "id": "f15"
+        }
     ],
     [
-        { colour: "white", id: "19" }, { colour: "red", id: "20" }, { colour: "white", id: "21" },
-        { colour: "white", id: "22" }, { colour: "white", id: "23" }, { colour: "white", id: "24" }, { colour: "win", id: "win1" }, { colour: "win", id: "win2" },
-        { colour: "win", id: "win3" },
-        { colour: "white", id: "25" }, { colour: "white", id: "26" }, { colour: "white", id: "27" },
-        { colour: "white", id: "28" }, { colour: "white", id: "29" }, { colour: "white", id: "30" },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g2",
+            "colorPath": null,
+            "id": "g1"
+        },
+        {
+            "type": "neutral",
+            "color": "red",
+            "next": "g3",
+            "colorPath": null,
+            "id": "g2"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g4",
+            "colorPath": null,
+            "id": "g3"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g5",
+            "colorPath": null,
+            "id": "g4"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g6",
+            "colorPath": null,
+            "id": "g5"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "f7",
+            "colorPath": null,
+            "id": "g6"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "g7"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "g8"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "g9"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g11",
+            "colorPath": null,
+            "id": "g10"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g12",
+            "colorPath": null,
+            "id": "g11"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g13",
+            "colorPath": null,
+            "id": "g12"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g14",
+            "colorPath": null,
+            "id": "g13"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g15",
+            "colorPath": null,
+            "id": "g14"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "h15",
+            "colorPath": null,
+            "id": "g15"
+        }
     ],
     [
-        { colour: "white", id: "31" }, { colour: "red", id: "32" }, { colour: "red", id: "33" },
-        { colour: "red", id: "34" }, { colour: "red", id: "35" }, { colour: "red", id: "36" }, { colour: "win", id: "win4" }, { colour: "win", id: "win5" },
-        { colour: "win", id: "win6" },
-        { colour: "green", id: "37" }, { colour: "green", id: "38" }, { colour: "green", id: "39" },
-        { colour: "green", id: "40" }, { colour: "green", id: "41" }, { colour: "white", id: "42" },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "g1",
+            "colorPath": null,
+            "id": "h1"
+        },
+        {
+            "type": "neutral",
+            "color": "red",
+            "next": "h3",
+            "colorPath": null,
+            "id": "h2"
+        },
+        {
+            "type": "neutral",
+            "color": "red",
+            "next": "h4",
+            "colorPath": null,
+            "id": "h3"
+        },
+        {
+            "type": "neutral",
+            "color": "red",
+            "next": "h5",
+            "colorPath": null,
+            "id": "h4"
+        },
+        {
+            "type": "neutral",
+            "color": "red",
+            "next": "h6",
+            "colorPath": null,
+            "id": "h5"
+        },
+        {
+            "type": "neutral",
+            "color": "red",
+            "next": "win",
+            "colorPath": null,
+            "id": "h6"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "h7"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": "h9",
+            "colorPath": null,
+            "id": "h8"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "h9"
+        },
+        {
+            "type": "neutral",
+            "color": "yellow",
+            "next": "win",
+            "colorPath": null,
+            "id": "h10"
+        },
+        {
+            "type": "neutral",
+            "color": "yellow",
+            "next": "h10",
+            "colorPath": null,
+            "id": "h11"
+        },
+        {
+            "type": "neutral",
+            "color": "yellow",
+            "next": "h11",
+            "colorPath": null,
+            "id": "h12"
+        },
+        {
+            "type": "neutral",
+            "color": "yellow",
+            "next": "h12",
+            "colorPath": null,
+            "id": "h13"
+        },
+        {
+            "type": "neutral",
+            "color": "yellow",
+            "next": "h13",
+            "colorPath": null,
+            "id": "h14"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i15",
+            "colorPath": null,
+            "id": "h15"
+        }
     ],
     [
-        { colour: "white", id: "43" }, { colour: "white", id: "44" }, { colour: "white", id: "45" },
-        { colour: "white", id: "46" }, { colour: "white", id: "47" }, { colour: "white", id: "48" }, { colour: "win", id: "win5" }, { colour: "win", id: "win6" },
-        { colour: "win", id: "win7" },
-        { colour: "white", id: "49" }, { colour: "white", id: "50" }, { colour: "white", id: "51" },
-        { colour: "white", id: "52" }, { colour: "green", id: "53" }, { colour: "white", id: "54" },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "h1",
+            "colorPath": null,
+            "id": "i1"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i1",
+            "colorPath": null,
+            "id": "i2"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i2",
+            "colorPath": null,
+            "id": "i3"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i3",
+            "colorPath": null,
+            "id": "i4"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i4",
+            "colorPath": null,
+            "id": "i5"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i5",
+            "colorPath": null,
+            "id": "i6"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "i7"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "i8"
+        },
+        {
+            "type": "win",
+            "color": null,
+            "next": null,
+            "colorPath": null,
+            "id": "i9"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "j9",
+            "colorPath": null,
+            "id": "i10"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i10",
+            "colorPath": null,
+            "id": "i11"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i11",
+            "colorPath": null,
+            "id": "i12"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i12",
+            "colorPath": null,
+            "id": "i13"
+        },
+        {
+            "type": "neutral",
+            "color": "yellow",
+            "next": "i13",
+            "colorPath": null,
+            "id": "i14"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i4",
+            "colorPath": null,
+            "id": "i15"
+        }
     ],
     [
-        { colour: "blue", id: "b1" }, { colour: "blue", id: "b2" }, { colour: "blue", id: "b3" },
-        { colour: "blue", id: "b4" }, { colour: "blue", id: "b5" }, { colour: "blue", id: "b6" },
-        { colour: "white", id: "55" }, { colour: "blue", id: "56" }, { colour: "white", id: "57" },
-        { colour: "green", id: "g1" }, { colour: "green", id: "g2" }, { colour: "green", id: "g3" },
-        { colour: "green", id: "g4" }, { colour: "green", id: "g5" }, { colour: "green", id: "g6" }
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "j1"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "j2"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "j3"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "j4"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "j5"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "j6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "i6",
+            "colorPath": null,
+            "id": "j7"
+        },
+        {
+            "type": "neutral",
+            "color": "green",
+            "next": "win",
+            "colorPath": null,
+            "id": "j8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "k9",
+            "colorPath": null,
+            "id": "j9"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "j10"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "j11"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "j12"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "j13"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "j14"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "j15"
+        }
     ],
     [
-        { colour: "blue", id: "b7" }, { colour: "blue", id: "b8" }, { colour: "blue", id: "b9" },
-        { colour: "blue", id: "b10" }, { colour: "blue", id: "b11" }, { colour: "blue", id: "b12" },
-        { colour: "white", id: "58" }, { colour: "blue", id: "59" }, { colour: "white", id: "60" },
-        { colour: "green", id: "g7" }, { colour: "green", id: "g8" }, { colour: "green", id: "g9" },
-        { colour: "green", id: "g10" }, { colour: "green", id: "g11" }, { colour: "green", id: "g12" }
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "k1"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "k2"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "k3"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "k4"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "k5"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "k6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "j7",
+            "colorPath": null,
+            "id": "k7"
+        },
+        {
+            "type": "neutral",
+            "color": "green",
+            "next": "j8",
+            "colorPath": null,
+            "id": "k8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "l9",
+            "colorPath": null,
+            "id": "k9"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "k10"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "k11"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "k12"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "k13"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "k14"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "k15"
+        }
     ],
     [
-        { colour: "blue", id: "b13" }, { colour: "blue", id: "b14" }, { colour: "blue", id: "b15" },
-        { colour: "blue", id: "b16" }, { colour: "blue", id: "b17" }, { colour: "blue", id: "b18" },
-        { colour: "white", id: "61" }, { colour: "blue", id: "62" }, { colour: "white", id: "63" },
-        { colour: "green", id: "g13" }, { colour: "green", id: "g14" }, { colour: "green", id: "g15" },
-        { colour: "green", id: "g16" }, { colour: "green", id: "g17" }, { colour: "green", id: "g18" }
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "l1"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "l2"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "l3"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "l4"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "l5"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "l6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "k7",
+            "colorPath": null,
+            "id": "l7"
+        },
+        {
+            "type": "neutral",
+            "color": "green",
+            "next": "k8",
+            "colorPath": null,
+            "id": "l8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "m9",
+            "colorPath": null,
+            "id": "l9"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "l10"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "l11"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "l12"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "l13"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "l14"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "l15"
+        }
     ],
     [
-        { colour: "blue", id: "b19" }, { colour: "blue", id: "b20" }, { colour: "blue", id: "b21" },
-        { colour: "blue", id: "b22" }, { colour: "blue", id: "b23" }, { colour: "blue", id: "b24" },
-        { colour: "white", id: "64" }, { colour: "blue", id: "65" }, { colour: "white", id: "66" },
-        { colour: "green", id: "g19" }, { colour: "green", id: "g20" }, { colour: "green", id: "g21" },
-        { colour: "green", id: "g22" }, { colour: "green", id: "g23" }, { colour: "green", id: "g24" }
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "m1"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "m2"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "m3"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "m4"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "m5"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "m6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "l7",
+            "colorPath": null,
+            "id": "m7"
+        },
+        {
+            "type": "neutral",
+            "color": "green",
+            "next": "l8",
+            "colorPath": null,
+            "id": "m8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "n9",
+            "colorPath": null,
+            "id": "m9"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "m10"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "m11"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "m12"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "m13"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "m14"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "m15"
+        }
     ],
     [
-        { colour: "blue", id: "b25" }, { colour: "blue", id: "b26" }, { colour: "blue", id: "b27" },
-        { colour: "blue", id: "b28" }, { colour: "blue", id: "b29" }, { colour: "blue", id: "b30" },
-        { colour: "blue", id: "67" }, { colour: "blue", id: "68" }, { colour: "white", id: "69" },
-        { colour: "green", id: "g25" }, { colour: "green", id: "g26" }, { colour: "green", id: "g27" },
-        { colour: "green", id: "g28" }, { colour: "green", id: "g29" }, { colour: "green", id: "g30" }
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "n1"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "n2"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "n3"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "n4"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "n5"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "n6"
+        },
+        {
+            "type": "neutral",
+            "color": "green",
+            "next": "m7",
+            "colorPath": null,
+            "id": "n7"
+        },
+        {
+            "type": "neutral",
+            "color": "green",
+            "next": "m8",
+            "colorPath": null,
+            "id": "n8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "o9",
+            "colorPath": null,
+            "id": "n9"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "n10"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "n11"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "n12"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "n13"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "n14"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "n15"
+        }
     ],
     [
-        { colour: "blue", id: "b31" }, { colour: "blue", id: "b32" }, { colour: "blue", id: "b33" },
-        { colour: "blue", id: "b34" }, { colour: "blue", id: "b35" }, { colour: "blue", id: "b36" },
-        { colour: "white", id: "70" }, { colour: "white", id: "71" }, { colour: "white", id: "72" },
-        { colour: "green", id: "g31" }, { colour: "green", id: "g32" }, { colour: "green", id: "g33" },
-        { colour: "green", id: "g34" }, { colour: "green", id: "g35" }, { colour: "green", id: "g36" }
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "o1"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "o2"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "o3"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "o4"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "o5"
+        },
+        {
+            "type": "home",
+            "color": "green",
+            "next": null,
+            "colorPath": null,
+            "id": "o6"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "n7",
+            "colorPath": null,
+            "id": "o7"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "o7",
+            "colorPath": null,
+            "id": "o8"
+        },
+        {
+            "type": "neutral",
+            "color": null,
+            "next": "o8",
+            "colorPath": null,
+            "id": "o9"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "o10"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "o11"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "o12"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "o13"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "o14"
+        },
+        {
+            "type": "home",
+            "color": "yellow",
+            "next": null,
+            "colorPath": null,
+            "id": "o15"
+        }
     ]
-];
+]
 
-export const PIECES: Record<string, Array<Piece>> = {
-    red: [
-        { id: 1, position: "r8" },
-        { id: 2, position: "r11" },
-        { id: 3, position: "r26" },
-        { id: 4, position: "r29" }
-    ],
-    yellow: [
-        { id: 1, position: "y8" },
-        { id: 2, position: "y11" },
-        { id: 3, position: "y26" },
-        { id: 4, position: "y29" }
-    ],
-    green: [
-        { id: 1, position: "g8" },
-        { id: 2, position: "g11" },
-        { id: 3, position: "g26" },
-        { id: 4, position: "g29" }
-    ],
-    blue: [
-        { id: 1, position: "b8" },
-        { id: 2, position: "b11" },
-        { id: 3, position: "b26" },
-        { id: 4, position: "b29" }
-    ]
-};
+export const PIECES: Array<Piece> = [
+    {
+        color: "red",
+        home: "a1",
+        position: "a1"
+    },
+    {
+        color: "red",
+        home: "a2",
+        position: "a2"
+    },
+    {
+        color: "red",
+        home: "a3",
+        position: "a3"
+    },
+    {
+        color: "red",
+        home: "a4",
+        position: "a4"
+    },
+    {
+        color: "blue",
+        home: "a10",
+        position: "a10"
+    },
+    {
+        color: "blue",
+        home: "a11",
+        position: "a11"
+    },
+    {
+        color: "blue",
+        home: "a12",
+        position: "a12"
+    },
+    {
+        color: "blue",
+        home: "a13",
+        position: "a13"
+    },
+    {
+        color: "green",
+        home: "o1",
+        position: "o1"
+    },
+    {
+        color: "green",
+        home: "o2",
+        position: "o2"
+    },
+    {
+        color: "green",
+        home: "o3",
+        position: "o3"
+    },
+    {
+        color: "green",
+        home: "o4",
+        position: "o4"
+    },
+    {
+        color: "yellow",
+        home: "o10",
+        position: "o10"
+    },
+    {
+        color: "yellow",
+        home: "o11",
+        position: "o11"
+    },
+    {
+        color: "yellow",
+        home: "o12",
+        position: "o12"
+    },
+    {
+        color: "yellow",
+        home: "o13",
+        position: "o13"
+    }
+]

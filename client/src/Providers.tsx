@@ -3,13 +3,14 @@ import { WsContext } from "./context/WsContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DataContext, DataType } from "./context/DataContext";
+// import { Cell } from "./constants/board";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const { id: gameId } = useParams()
   const navigate = useNavigate();
   const websocketRef = useRef<WebSocket | null>(null);
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
-  const [data, setData] = useState<DataType>({ players: null, isAdmin: false, name: "" });
+  const [data, setData] = useState<DataType>({ players: null, isAdmin: false, name: "", pieces: [], turn: false });
 
   useEffect(() => {
     if (!websocketRef.current) {    
@@ -19,7 +20,6 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       wsConnection.onmessage = (ev) => {
         try {
           const message = JSON.parse(ev.data);
-          console.log(message);
           if (message.type === "players") {
             if (message.success) {
               console.log("SETTING DATA TO ", message.data);
@@ -33,8 +33,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
               toast.success(message.message);
               navigate(`/board/${message.roomId}`);
             } else toast.error(message.message);
-          } else if (message.type === "board_data") {
+          } else if (message.type === "board_event") {
             console.log(message);
+            setData({ ...data, pieces: message.pieces, turn: message.turn })
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);

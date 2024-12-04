@@ -2,10 +2,11 @@ import express, { json } from "express";
 import cors from "cors";
 import { config, populate } from "dotenv";
 import { WebSocket, WebSocketServer } from "ws";
-import http from "http";
+import http, { ClientRequest } from "http";
 import roomRouter from "./routes/room.route";
-import { LUDO_BOARD } from "./constants/board";
+import { BOARD, Cell } from "./constants/board";
 import { Piece, PIECES } from "./constants/pieces";
+import fs from "fs/promises"
 
 config();
 
@@ -25,9 +26,8 @@ type UserData = {
 }
 
 type GameData = {
-    board: Array<Array<string>>,
     users: Array<UserData>,
-    pieces: Record<string, Array<Piece>>
+    pieces: Array<Piece>
 }
 
 const port = process.env.PORT || 5000;
@@ -54,18 +54,24 @@ wss.on("connection", (ws) => {
                 case "join_room": {
                     const { roomId, playerName } = jsonData;
                     const colors = [Color.red, Color.blue, Color.green, Color.yellow]
-                    const colorForUser = colors[games[roomId].users.length]
+                    const colorForUser = colors[games[roomId]?.users.length || 0]
                     // Add the WebSocket to the specified room
-                    if (games[roomId].users && games[roomId].users.length === 4) {
+                    if (games[roomId]?.users && games[roomId]?.users?.length === 4) {
                         ws.send(JSON.stringify({ type: "players", success: false, message: "Maximum of 4 players can play this game" }))
                         break;
                     }
                     // if (!games[roomId]) ws.send(JSON.stringify({ type: "players", message: "Room does not exist!" }))
-                    if (!games[roomId].users) games[roomId].users = [...(games[roomId].users || []), { ws: ws, turn: true, admin: true, name: playerName, color: colorForUser }];
-                    else games[roomId].users = [...(games[roomId].users || []), { ws: ws, turn: false, admin: false, name: playerName, color: colorForUser }];
+                    if (!games[roomId] || !games[roomId].users) {
+                        games[roomId] = {
+                            pieces: PIECES,
+                            users: []
+                        }
+                        games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: true, admin: true, name: playerName, color: colorForUser }];
+                    }
+                    else games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: false, admin: false, name: playerName, color: colorForUser }];
 
                     // Prepare the list of players (could use unique identifiers later)
-                    const players = games[roomId].users.map((player) => player.name);
+                    const players = games[roomId]?.users?.map((player) => player.name);
                     console.log(players);
 
                     // Broadcast the updated player list to all players in the room
@@ -81,11 +87,12 @@ wss.on("connection", (ws) => {
                 case "start_game": {
                     const { gameId } = jsonData
                     const players = games[gameId].users.length
+                    
                     if (players === 4) {
                         games[gameId].users.forEach((client) => {
                             if (client.ws.readyState === WebSocket.OPEN) {
                                 client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId }));
-                                client.ws.send(JSON.stringify({ type: "board_event", success: true, board: LUDO_BOARD, turn: client.turn }));
+                                client.ws.send(JSON.stringify({ type: "board_event", success: true, pieces: games[gameId].pieces, turn: client.turn }));
                             }
                         });
                     } else {
@@ -104,12 +111,11 @@ wss.on("connection", (ws) => {
                             client.ws.send(JSON.stringify({ type: "roll_die", roll: dieRoll, user: user.name, turn: user.turn  }))
                         })
                     }
-                    
                 }
 
                 case "make_move": {
                     const { gameId, dieRoll, piece } = jsonData
-                    const currentBoardState = games[gameId].board
+                    // const currentBoardState = games[gameId].board
                     const pieces = games[gameId].pieces
                     const user = games[gameId].users.find(user => user.turn)
                     if (user) {

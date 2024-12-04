@@ -77,7 +77,40 @@ const Home = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <Button onClick={createRoom}>Create Room</Button>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button>Create Room</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Create Room</DialogTitle>
+            <DialogDescription>
+              Enter your name to create a ludo game room with you as the admin
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex items-center space-x-2">
+            <div className="grid flex-1 gap-2">
+              <Label htmlFor="link" className="sr-only">
+                Name
+              </Label>
+              <Input
+                id="name"
+                placeholder="Enter your name..."
+                value={data.name}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter className="sm:justify-start">
+            <DialogClose asChild>
+              <Button type="button" variant="default" className="ml-auto" onClick={createRoom}>
+                Create Room
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* <Button onClick={createRoom}>Create Room</Button> */}
     </div>
   );
 };
