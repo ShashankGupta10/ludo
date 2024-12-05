@@ -2,6 +2,7 @@ export type Piece = {
     position: string;
     color: PieceColor,
     home: string
+    openPosition: string
 }
 
 
@@ -1636,81 +1637,97 @@ export const PIECES: Array<Piece> = [
     {
         color: "red",
         home: "a1",
-        position: "a1"
+        position: "a1",
+        openPosition: "g2"
     },
     {
         color: "red",
         home: "a2",
-        position: "a2"
+        position: "a2",
+        openPosition: "g2"
     },
     {
         color: "red",
         home: "a3",
-        position: "a3"
+        position: "a3",
+        openPosition: "g2"
     },
     {
         color: "red",
         home: "a4",
-        position: "a4"
+        position: "a4",
+        openPosition: "g2"
     },
     {
         color: "blue",
         home: "a10",
-        position: "a10"
+        position: "a10",
+        openPosition: "b9"
     },
     {
         color: "blue",
         home: "a11",
-        position: "a11"
+        position: "a11",
+        openPosition: "b9"
     },
     {
         color: "blue",
         home: "a12",
-        position: "a12"
+        position: "a12",
+        openPosition: "b9"
     },
     {
         color: "blue",
         home: "a13",
-        position: "a13"
+        position: "a13",
+        openPosition: "b9"
     },
     {
         color: "green",
         home: "o1",
-        position: "o1"
+        position: "o1",
+        openPosition: "n7"
     },
     {
         color: "green",
         home: "o2",
-        position: "o2"
+        position: "o2",
+        openPosition: "n7"
     },
     {
         color: "green",
         home: "o3",
-        position: "o3"
+        position: "o3",
+        openPosition: "n7"
     },
     {
         color: "green",
         home: "o4",
-        position: "o4"
+        position: "o4",
+        openPosition: "n7"
     },
     {
         color: "yellow",
         home: "o10",
-        position: "o10"
+        position: "o10",
+        openPosition: "i14"
     },
     {
         color: "yellow",
         home: "o11",
-        position: "o11"
+        position: "o11",
+        openPosition: "i14"
     },
     {
         color: "yellow",
         home: "o12",
-        position: "o12"
+        position: "o12",
+        openPosition: "i14"
     },
     {
         color: "yellow",
         home: "o13",
-        position: "o13"
+        position: "o13",
+        openPosition: "i14"
     }
 ]

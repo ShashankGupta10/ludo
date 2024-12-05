@@ -18,12 +18,10 @@ import { DataContext } from "@/context/DataContext";
 
 const Home = () => {
   const [roomId, setRoomId] = useState("")
-  // const [name, setName] = useState("")
   const { data, setData } = useContext(DataContext)
   const navigate = useNavigate();
   
   const createRoom = async () => {
-    // setData({ ...data, name: name })
     const response = await axios.post(
       "http://localhost:5000/api/v1/room/create"
     );
@@ -110,7 +108,6 @@ const Home = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* <Button onClick={createRoom}>Create Room</Button> */}
     </div>
   );
 };

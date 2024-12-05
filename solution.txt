@@ -5,3 +5,8 @@
 3) After client selects the piece to move, make the move on the board in the backend with all the rules and update the game state accordingly.
 4) Emit the board and pieces data to the client.
 
+// make safe squares
+// calculate win and create colorPaths
+
+// UI / frontend for the end
+// after UI, improve the trash unreadable code.

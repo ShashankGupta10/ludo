@@ -23,7 +23,6 @@ const WaitingArea = () => {
   const sendData = useCallback((ws: WebSocket, dataToSend: string) => {
     if (ws.readyState === WebSocket.OPEN) {
       ws.send(dataToSend);
-      // clearTimeout()
     } else {
       setTimeout(() => sendData(ws, dataToSend), 10); // Retry sending if WebSocket isn't open
       console.log("DONE, WAITING");

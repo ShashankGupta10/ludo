@@ -1,19 +1,28 @@
 import React, { useEffect, useState, useRef } from "react";
 import { WsContext } from "./context/WsContext";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DataContext, DataType } from "./context/DataContext";
 // import { Cell } from "./constants/board";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
-  const { id: gameId } = useParams()
   const navigate = useNavigate();
   const websocketRef = useRef<WebSocket | null>(null);
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
-  const [data, setData] = useState<DataType>({ players: null, isAdmin: false, name: "", pieces: [], turn: false });
+  const [data, setData] = useState<DataType>({
+    players: null,
+    isAdmin: false,
+    name: "",
+    pieces: [],
+    turn: false,
+    roll: 0,
+    color: "",
+    playMove: false
+  });
 
   useEffect(() => {
-    if (!websocketRef.current) {    
+    console.log("RE RENDER");
+    if (!websocketRef.current) {
       const wsConnection = new WebSocket("ws://localhost:5000");
       websocketRef.current = wsConnection;
 
@@ -22,20 +31,36 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
           const message = JSON.parse(ev.data);
           if (message.type === "players") {
             if (message.success) {
-              console.log("SETTING DATA TO ", message.data);
-              setData({ ...data, players: message.data, isAdmin: message.isAdmin });
+              setData({
+                ...data,
+                players: message.data,
+                isAdmin: message.isAdmin,
+              });
             } else {
               toast.error(message.message);
               navigate("/");
             }
           } else if (message.type === "start_game") {
             if (message.success) {
+              setData((prevData) => ({ ...prevData, color: message.color }))
               toast.success(message.message);
               navigate(`/board/${message.roomId}`);
             } else toast.error(message.message);
           } else if (message.type === "board_event") {
-            console.log(message);
-            setData({ ...data, pieces: message.pieces, turn: message.turn })
+            setData((prevState) => ({
+              ...prevState,
+              pieces: message.pieces,
+              turn: message.turn,
+              playMove: message.playMove
+            }));
+          } else if (message.type === "roll_die") {
+            setData((prevState) => ({
+              ...prevState,
+              name: message.user,
+              roll: message.roll,
+            }));
+          } else if (message.type === "make_move") {
+            setData((prevData) => ({ ...prevData,  }))
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
@@ -55,7 +80,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
       setWebsocket(wsConnection);
     }
-  }, [data, navigate, gameId]);
+  }, []);
 
   return (
     <WsContext.Provider value={{ websocket, setWebsocket }}>

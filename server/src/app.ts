@@ -1,12 +1,10 @@
-import express, { json } from "express";
+import express from "express";
 import cors from "cors";
-import { config, populate } from "dotenv";
+import { config } from "dotenv";
 import { WebSocket, WebSocketServer } from "ws";
-import http, { ClientRequest } from "http";
+import http from "http";
 import roomRouter from "./routes/room.route";
-import { BOARD, Cell } from "./constants/board";
-import { Piece, PIECES } from "./constants/pieces";
-import fs from "fs/promises"
+import { LUDO_BOARD, Piece, PIECES } from "./constants/board";
 
 config();
 
@@ -87,11 +85,11 @@ wss.on("connection", (ws) => {
                 case "start_game": {
                     const { gameId } = jsonData
                     const players = games[gameId].users.length
-                    
+
                     if (players === 4) {
                         games[gameId].users.forEach((client) => {
                             if (client.ws.readyState === WebSocket.OPEN) {
-                                client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId }));
+                                client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId, color: client.color }));
                                 client.ws.send(JSON.stringify({ type: "board_event", success: true, pieces: games[gameId].pieces, turn: client.turn }));
                             }
                         });
@@ -104,26 +102,108 @@ wss.on("connection", (ws) => {
                 case "roll_die": {
                     const { gameId } = jsonData
                     const dieRoll = Math.floor(Math.random() * 6) + 1
-                    console.log(dieRoll);
                     const user = games[gameId].users.find(player => player.turn)
+
                     if (user) {
-                        games[gameId].users.forEach(client => {
-                            client.ws.send(JSON.stringify({ type: "roll_die", roll: dieRoll, user: user.name, turn: user.turn  }))
-                        })
+                        if (dieRoll !== 6) {
+                            const userPiecesOnHome = games[gameId].pieces.filter(
+                                (p) => p.color === user.color && p.position === p.home
+                            ).length;
+                            console.log(userPiecesOnHome);
+                            if (userPiecesOnHome === 4) {
+                                const indexOfCurrentPlayer = games[gameId].users.indexOf(user)
+                                games[gameId].users[indexOfCurrentPlayer].turn = false
+                                if (indexOfCurrentPlayer === games[gameId].users.length - 1) {
+                                    games[gameId].users[0].turn = true
+                                } else {
+                                    games[gameId].users[indexOfCurrentPlayer + 1].turn = true
+                                }
+                                games[gameId].users.forEach(client => {
+                                    client.ws.send(JSON.stringify({ type: "roll_die", roll: dieRoll, user: user.name }))
+                                    client.ws.send(JSON.stringify({ type: "board_event", pieces: games[gameId].pieces, turn: client.turn, playMove: false }))
+                                })
+                            } else {
+                                games[gameId].users.forEach(client => {
+                                    client.ws.send(JSON.stringify({ type: "roll_die", roll: dieRoll, user: user.name }))
+                                    client.ws.send(JSON.stringify({ type: "board_event", pieces: games[gameId].pieces, turn: client.turn, playMove: true }))
+                                })
+                            }
+                        } else {
+                            games[gameId].users.forEach(client => {
+                                client.ws.send(JSON.stringify({ type: "roll_die", roll: dieRoll, user: user.name }))
+                                client.ws.send(JSON.stringify({ type: "board_event", pieces: games[gameId].pieces, turn: client.turn, playMove: true }))
+                            })
+                        }
                     }
+                    break;
                 }
 
                 case "make_move": {
-                    const { gameId, dieRoll, piece } = jsonData
-                    // const currentBoardState = games[gameId].board
-                    const pieces = games[gameId].pieces
-                    const user = games[gameId].users.find(user => user.turn)
-                    if (user) {
-                        const colour = user.color
-                        // const piecesPlace = pieces[colour].some(p => p.position !== -1)
+                    const { gameId, dieRoll, pieceId }: { gameId: string, dieRoll: number, pieceId: string } = jsonData;
+                    const game = games[gameId];
+                    if (!game) {
+                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "Game not found." }));
+                        break;
                     }
-                    const currentPlayer = games[gameId].users.find(player => player.turn)
-                    
+
+                    const currentPlayer = game.users.find((player) => player.turn);
+                    if (!currentPlayer || currentPlayer.ws !== ws) {
+                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "It's not your turn!" }));
+                        break;
+                    }
+
+                    const piece = game.pieces.find((p) => p.home === pieceId && p.color === currentPlayer.color);
+                    if (!piece) {
+                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "Invalid piece selected." }));
+                        break;
+                    }
+
+                    // Check if the piece can move
+                    if (piece.position === piece.home && dieRoll !== 6) {
+                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "You need a 6 to move out of home." }));
+                        break;
+                    }
+
+                    // Move piece out of home if roll is 6
+                    if (piece.position === piece.home && dieRoll === 6) {
+                        piece.position = piece.openPosition;
+                    } else {
+                        // Update position on the board
+                        for (let i = 0; i < dieRoll; i++) {
+                            const currentSquare = LUDO_BOARD.flat().find((sq) => sq.id === piece.position);
+                            const nextSquare = LUDO_BOARD.flat().find((sq) => sq.id === currentSquare?.next);
+                            piece.position = nextSquare?.id || piece.position;
+                        }
+                    }
+
+                    // Handle collisions (send opponent's piece home)
+                    const collidedPiece = game.pieces.find(
+                        (p) => p.position === piece.position && p.color !== piece.color
+                    );
+                    if (collidedPiece) {
+                        collidedPiece.position = collidedPiece.home;
+                    }
+
+                    // Notify all players about the updated board state
+                    if (dieRoll !== 6) {
+                        const currentIndex = game.users.indexOf(currentPlayer);
+                        game.users[currentIndex].turn = false;
+                        const nextIndex = (currentIndex + 1) % game.users.length;
+                        game.users[nextIndex].turn = true;
+                    }
+
+                    game.users.forEach((client) => {
+                        client.ws.send(
+                            JSON.stringify({
+                                type: "board_event",
+                                success: true,
+                                pieces: game.pieces,
+                                turn: client.turn,
+                                playMove: false
+                            })
+                        );
+                    });
+                    break;
                 }
 
                 default:
