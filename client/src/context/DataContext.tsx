@@ -1,8 +1,13 @@
 import { Piece } from "@/constants/board";
 import { createContext, Dispatch, SetStateAction } from "react";
 
+type Player = {
+  name: string;
+  isOnline: boolean;
+}
+
 export type DataType = {
-  players: string[] | null;
+  players: Player[] | null;
   isAdmin: boolean
   name: string
   pieces: Array<Piece>

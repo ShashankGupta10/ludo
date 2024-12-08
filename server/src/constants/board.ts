@@ -12,6 +12,11 @@ export type BoardSquare = {
     next: string | null
     colorPath: string | null
     id: string;
+    safe?: boolean
+    yellow?: string
+    blue?: string
+    green?: string
+    red?: string
 }
 
 type CellType = "neutral" | "home" | "win" | "path";
@@ -80,7 +85,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "type": "neutral",
             "color": null,
             "next": "a9",
-            "colorPath": null,
+            colorPath: null,
+            "blue": "b8",
             "id": "a8"
         },
         {
@@ -195,7 +201,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "blue",
             "next": "c9",
             "colorPath": null,
-            "id": "b9"
+            "id": "b9",
+            "safe": true
         },
         {
             "type": "home",
@@ -288,7 +295,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "b7",
             "colorPath": null,
-            "id": "c7"
+            "id": "c7",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -614,7 +622,7 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
         {
             "type": "neutral",
             "color": "blue",
-            "next": "win",
+            "next": "g8",
             "colorPath": null,
             "id": "f8"
         },
@@ -681,7 +689,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "red",
             "next": "g3",
             "colorPath": null,
-            "id": "g2"
+            "id": "g2",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -758,7 +767,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "g14",
             "colorPath": null,
-            "id": "g13"
+            "id": "g13",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -781,6 +791,7 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "g1",
             "colorPath": null,
+            "red": "h2",
             "id": "h1"
         },
         {
@@ -814,7 +825,7 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
         {
             "type": "neutral",
             "color": "red",
-            "next": "win",
+            "next": "h7",
             "colorPath": null,
             "id": "h6"
         },
@@ -842,7 +853,7 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
         {
             "type": "neutral",
             "color": "yellow",
-            "next": "win",
+            "next": "h9",
             "colorPath": null,
             "id": "h10"
         },
@@ -879,6 +890,7 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "i15",
             "colorPath": null,
+            "yellow": "h14",
             "id": "h15"
         }
     ],
@@ -902,7 +914,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "i2",
             "colorPath": null,
-            "id": "i3"
+            "id": "i3",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -979,7 +992,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "yellow",
             "next": "i13",
             "colorPath": null,
-            "id": "i14"
+            "id": "i14",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -1042,7 +1056,7 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
         {
             "type": "neutral",
             "color": "green",
-            "next": "win",
+            "next": "i8",
             "colorPath": null,
             "id": "j8"
         },
@@ -1372,7 +1386,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "n9",
             "colorPath": null,
-            "id": "m9"
+            "id": "m9",
+            "safe": true
         },
         {
             "type": "home",
@@ -1465,7 +1480,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "green",
             "next": "m7",
             "colorPath": null,
-            "id": "n7"
+            "id": "n7",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -1579,6 +1595,7 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "o7",
             "colorPath": null,
+            "green": "n8",
             "id": "o8"
         },
         {

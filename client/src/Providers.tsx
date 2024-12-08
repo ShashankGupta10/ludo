@@ -31,17 +31,20 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
           const message = JSON.parse(ev.data);
           if (message.type === "players") {
             if (message.success) {
-              setData({
-                ...data,
+              setData((prevData) => ({
+                ...prevData,
                 players: message.data,
                 isAdmin: message.isAdmin,
-              });
+              }));
             } else {
               toast.error(message.message);
               navigate("/");
             }
           } else if (message.type === "start_game") {
             if (message.success) {
+              localStorage.setItem("color", message.color);
+              localStorage.setItem("roomId", message.roomId);
+              localStorage.setItem("name", message.name);
               setData((prevData) => ({ ...prevData, color: message.color }))
               toast.success(message.message);
               navigate(`/board/${message.roomId}`);

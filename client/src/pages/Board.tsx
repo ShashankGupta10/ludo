@@ -45,8 +45,6 @@ const Board = () => {
         {LUDO_BOARD.map((row, rowIndex) => (
           <div key={rowIndex} className="row flex gap-1">
             {row.map((square, idx) => {
-              if (idx === 0 && rowIndex === 0) console.log(square);
-
               return (
                 <div
                   key={idx}
@@ -54,6 +52,7 @@ const Board = () => {
                     square.color ? `bg-${square.color}-200` : "bg-gray-50"
                   }`}
                 >
+                  {square.safe && <>S</>}
                   {data.pieces
                     .filter((piece) => piece.position === square.id)
                     .map((piece, pieceIndex) => (

@@ -12,6 +12,7 @@ export type BoardSquare = {
     next: string | null
     colorPath: string | null
     id: string;
+    safe?: boolean
 }
 
 type CellType = "neutral" | "home" | "win" | "path";
@@ -195,7 +196,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "blue",
             "next": "c9",
             "colorPath": null,
-            "id": "b9"
+            "id": "b9",
+            "safe": true
         },
         {
             "type": "home",
@@ -288,7 +290,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "b7",
             "colorPath": null,
-            "id": "c7"
+            "id": "c7",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -681,7 +684,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "red",
             "next": "g3",
             "colorPath": null,
-            "id": "g2"
+            "id": "g2",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -758,7 +762,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "g14",
             "colorPath": null,
-            "id": "g13"
+            "id": "g13",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -902,7 +907,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "i2",
             "colorPath": null,
-            "id": "i3"
+            "id": "i3",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -979,12 +985,13 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "yellow",
             "next": "i13",
             "colorPath": null,
-            "id": "i14"
+            "id": "i14",
+            "safe": true
         },
         {
             "type": "neutral",
             "color": null,
-            "next": "i4",
+            "next": "i14",
             "colorPath": null,
             "id": "i15"
         }
@@ -1372,7 +1379,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": null,
             "next": "n9",
             "colorPath": null,
-            "id": "m9"
+            "id": "m9",
+            "safe": true
         },
         {
             "type": "home",
@@ -1465,7 +1473,8 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
             "color": "green",
             "next": "m7",
             "colorPath": null,
-            "id": "n7"
+            "id": "n7",
+            "safe": true
         },
         {
             "type": "neutral",
@@ -1636,98 +1645,98 @@ export const LUDO_BOARD: Array<Array<BoardSquare>> = [
 export const PIECES: Array<Piece> = [
     {
         color: "red",
-        home: "a1",
-        position: "a1",
+        home: "b2",
+        position: "b2",
         openPosition: "g2"
     },
     {
         color: "red",
-        home: "a2",
-        position: "a2",
+        home: "b5",
+        position: "b5",
         openPosition: "g2"
     },
     {
         color: "red",
-        home: "a3",
-        position: "a3",
+        home: "e2",
+        position: "e2",
         openPosition: "g2"
     },
     {
         color: "red",
-        home: "a4",
-        position: "a4",
+        home: "e5",
+        position: "e5",
         openPosition: "g2"
     },
     {
         color: "blue",
-        home: "a10",
-        position: "a10",
+        home: "b11",
+        position: "b11",
         openPosition: "b9"
     },
     {
         color: "blue",
-        home: "a11",
-        position: "a11",
+        home: "b14",
+        position: "b14",
         openPosition: "b9"
     },
     {
         color: "blue",
-        home: "a12",
-        position: "a12",
+        home: "e11",
+        position: "e11",
         openPosition: "b9"
     },
     {
         color: "blue",
-        home: "a13",
-        position: "a13",
+        home: "e14",
+        position: "e14",
         openPosition: "b9"
     },
     {
         color: "green",
-        home: "o1",
-        position: "o1",
+        home: "k2",
+        position: "k2",
         openPosition: "n7"
     },
     {
         color: "green",
-        home: "o2",
-        position: "o2",
+        home: "k5",
+        position: "k5",
         openPosition: "n7"
     },
     {
         color: "green",
-        home: "o3",
-        position: "o3",
+        home: "n2",
+        position: "n2",
         openPosition: "n7"
     },
     {
         color: "green",
-        home: "o4",
-        position: "o4",
+        home: "n5",
+        position: "n5",
         openPosition: "n7"
     },
     {
         color: "yellow",
-        home: "o10",
-        position: "o10",
+        home: "k11",
+        position: "k11",
         openPosition: "i14"
     },
     {
         color: "yellow",
-        home: "o11",
-        position: "o11",
+        home: "k14",
+        position: "k14",
         openPosition: "i14"
     },
     {
         color: "yellow",
-        home: "o12",
-        position: "o12",
+        home: "n11",
+        position: "n11",
         openPosition: "i14"
     },
     {
         color: "yellow",
-        home: "o13",
-        position: "o13",
+        home: "n14",
+        position: "n14",
         openPosition: "i14"
     }
 ]

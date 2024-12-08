@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const WaitingArea = () => {
   const { websocket, setWebsocket } = useContext(WsContext);
-  const { data } = useContext(DataContext)
+  const { data } = useContext(DataContext);
   const { id: gameId } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const WaitingArea = () => {
       const joinRoomData = {
         type: "join_room",
         roomId: gameId,
-        playerName: data.name
+        playerName: data.name,
       };
 
       // Send data when the WebSocket connection opens
@@ -52,7 +52,10 @@ const WaitingArea = () => {
       <p>Players:</p>
       <ul>
         {data.players?.map((player, index) => (
-          <li key={index}>{player}</li>
+          <div key={index}>
+            <li>{player.name}</li>
+            <li>{player.isOnline ? "Online" : "Offline"}</li>
+          </div>
         ))}
       </ul>
       {data.isAdmin && <Button onClick={startGame}>Start Game</Button>}

@@ -5,4 +5,3 @@ export const createRoom = async (req: Request, res: Response) => {
     
     res.status(200).json({ message: "Room created successfully", id: roomId });
 };
-

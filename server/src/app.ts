@@ -1,11 +1,10 @@
+import http from "http";
 import express from "express";
 import cors from "cors";
+import roomRouter from "./routes/room.route";
 import { config } from "dotenv";
 import { WebSocket, WebSocketServer } from "ws";
-import http from "http";
-import roomRouter from "./routes/room.route";
 import { LUDO_BOARD, Piece, PIECES } from "./constants/board";
-
 config();
 
 enum Color {
@@ -21,12 +20,15 @@ type UserData = {
     turn: boolean
     name: string,
     color: Color
+    isOnline: boolean
 }
 
 type GameData = {
     users: Array<UserData>,
     pieces: Array<Piece>
 }
+
+type PieceColor = "red" | "blue" | "green" | "yellow"
 
 const port = process.env.PORT || 5000;
 
@@ -39,6 +41,24 @@ app.use("/api/v1/room", roomRouter);
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
+
+function calculateStepsToWin(currentPosition: string, winPosition: string, pieceColor: PieceColor): number {
+    let steps = 0;
+    let square = LUDO_BOARD.flat().find((sq) => sq.id === currentPosition);
+    while (square && square.id !== winPosition) {
+        if (square[pieceColor]) square = LUDO_BOARD.flat().find((sq) => sq.id === square?.[pieceColor]);
+        else square = LUDO_BOARD.flat().find((sq) => sq.id === square?.next);
+        steps++;
+    }
+    return steps;
+}
+
+const winPosition = {
+    red: "h7",
+    blue: "g8",
+    green: "i8",
+    yellow: "h9"
+}
 
 wss.on("connection", (ws) => {
     console.log("New WebSocket connection established.");
@@ -64,12 +84,12 @@ wss.on("connection", (ws) => {
                             pieces: PIECES,
                             users: []
                         }
-                        games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: true, admin: true, name: playerName, color: colorForUser }];
+                        games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: true, admin: true, name: playerName, color: colorForUser, isOnline: true }];
                     }
-                    else games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: false, admin: false, name: playerName, color: colorForUser }];
+                    else games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: false, admin: false, name: playerName, color: colorForUser, isOnline: true }];
 
                     // Prepare the list of players (could use unique identifiers later)
-                    const players = games[roomId]?.users?.map((player) => player.name);
+                    const players = games[roomId]?.users?.map((player) => { return { name: player.name, isOnline: player.isOnline } });
                     console.log(players);
 
                     // Broadcast the updated player list to all players in the room
@@ -82,6 +102,21 @@ wss.on("connection", (ws) => {
                     break;
                 }
 
+                case "rejoin_room": {
+                    const { name, roomId, color } = jsonData
+                    console.log(name, roomId, color, games[roomId], games);
+                    const user = games[roomId]?.users.find(player => player.name === name && player.color === color)
+                    if (user) {
+                        user.isOnline = true
+                        user.ws = ws
+                        const players = games[roomId].users.map((player) => { return { name: player.name, isOnline: player.isOnline } });
+                        games[roomId].users.forEach((client) => {
+                            if (client.ws.readyState === WebSocket.OPEN) {
+                                client.ws.send(JSON.stringify({ type: "players", data: players, success: true, isAdmin: client.admin }));
+                            }
+                        });
+                    }
+                }
                 case "start_game": {
                     const { gameId } = jsonData
                     const players = games[gameId].users.length
@@ -89,7 +124,7 @@ wss.on("connection", (ws) => {
                     if (players === 4) {
                         games[gameId].users.forEach((client) => {
                             if (client.ws.readyState === WebSocket.OPEN) {
-                                client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId, color: client.color }));
+                                client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId, color: client.color, name: client.name }));
                                 client.ws.send(JSON.stringify({ type: "board_event", success: true, pieces: games[gameId].pieces, turn: client.turn }));
                             }
                         });
@@ -139,70 +174,122 @@ wss.on("connection", (ws) => {
                 }
 
                 case "make_move": {
-                    const { gameId, dieRoll, pieceId }: { gameId: string, dieRoll: number, pieceId: string } = jsonData;
+                    const { gameId, dieRoll, pieceId }: { gameId: string; dieRoll: number, pieceId: string } = jsonData;
                     const game = games[gameId];
                     if (!game) {
+                        console.log("GNF");
                         ws.send(JSON.stringify({ type: "make_move", success: false, message: "Game not found." }));
                         break;
                     }
 
                     const currentPlayer = game.users.find((player) => player.turn);
                     if (!currentPlayer || currentPlayer.ws !== ws) {
+                        console.log("NYT");
                         ws.send(JSON.stringify({ type: "make_move", success: false, message: "It's not your turn!" }));
                         break;
                     }
 
-                    const piece = game.pieces.find((p) => p.home === pieceId && p.color === currentPlayer.color);
-                    if (!piece) {
-                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "Invalid piece selected." }));
-                        break;
-                    }
+                    // Check if any piece can move
+                    const movablePieces = game.pieces.filter((piece) => {
+                        if (piece.color !== currentPlayer.color) return false;
 
-                    // Check if the piece can move
-                    if (piece.position === piece.home && dieRoll !== 6) {
-                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "You need a 6 to move out of home." }));
-                        break;
-                    }
+                        // If the piece is at home, it needs a 6 to move
+                        if (piece.position === piece.home && dieRoll === 6) return true;
 
-                    // Move piece out of home if roll is 6
-                    if (piece.position === piece.home && dieRoll === 6) {
-                        piece.position = piece.openPosition;
-                    } else {
-                        // Update position on the board
-                        for (let i = 0; i < dieRoll; i++) {
-                            const currentSquare = LUDO_BOARD.flat().find((sq) => sq.id === piece.position);
-                            const nextSquare = LUDO_BOARD.flat().find((sq) => sq.id === currentSquare?.next);
-                            piece.position = nextSquare?.id || piece.position;
-                        }
-                    }
+                        // If the piece is on the board, check if it can move without exceeding winPosition
+                        const stepsToWin = calculateStepsToWin(piece.position, winPosition[piece.color], piece.color);
+                        console.log(stepsToWin);
+                        return dieRoll <= stepsToWin;
+                    });
 
-                    // Handle collisions (send opponent's piece home)
-                    const collidedPiece = game.pieces.find(
-                        (p) => p.position === piece.position && p.color !== piece.color
-                    );
-                    if (collidedPiece) {
-                        collidedPiece.position = collidedPiece.home;
-                    }
+                    console.log("HERE:", movablePieces);
 
-                    // Notify all players about the updated board state
-                    if (dieRoll !== 6) {
+                    if (movablePieces.length === 0) {
+                        // No valid moves, skip turn
                         const currentIndex = game.users.indexOf(currentPlayer);
                         game.users[currentIndex].turn = false;
                         const nextIndex = (currentIndex + 1) % game.users.length;
                         game.users[nextIndex].turn = true;
+
+                        game.users.forEach((client) => {
+                            client.ws.send(
+                                JSON.stringify({
+                                    type: "board_event",
+                                    success: true,
+                                    pieces: game.pieces,
+                                    turn: client.turn,
+                                    playMove: false,
+                                })
+                            );
+                        });
+
+                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "No valid moves. Turn skipped." }));
+                        break;
                     }
 
-                    game.users.forEach((client) => {
-                        client.ws.send(
-                            JSON.stringify({
-                                type: "board_event",
-                                success: true,
-                                pieces: game.pieces,
-                                turn: client.turn,
-                                playMove: false
-                            })
-                        );
-                    });
+                    // Proceed with normal move logic for the selected piece
+                    const piece = game.pieces.find((p) => p.home === pieceId && p.color === currentPlayer.color);
+                    if (!piece) {
+                        console.log("INVALID PIECE");
+                        ws.send(JSON.stringify({ type: "make_move", success: false, message: "Invalid piece selected." }));
+                        break;
+                    }
+
+                    // Move logic (same as before, with collision handling)
+                    if (piece.position === piece.home && dieRoll === 6) {
+                        piece.position = piece.openPosition;
+                    } else {
+                        console.log("HERE");
+                        for (let i = 0; i < dieRoll; i++) {
+                            const currentSquare = LUDO_BOARD.flat().find((sq) => sq.id === piece.position);
+                            let nextSquare = LUDO_BOARD.flat().find((sq) => sq.id === currentSquare?.[piece.color]);
+                            if (!nextSquare) nextSquare = LUDO_BOARD.flat().find((sq) => sq.id === currentSquare?.next);
+                            console.log(nextSquare);
+                            piece.position = nextSquare?.id || piece.position;
+                        }
+                    }
+
+                    // Collision and turn-switching logic remains unchanged
+                    const collidedPiece = game.pieces.find(
+                        (p) => p.position === piece.position && p.color !== piece.color
+                    );
+                    const safeSquares = LUDO_BOARD.flat(1).filter(p => p.safe).map(p => p.id)
+                    if (collidedPiece && !safeSquares.includes(piece.position)) {
+                        collidedPiece.position = collidedPiece.home;
+                    }
+
+
+                    // Notify all players about the updated board state and no collided piece and not on star
+                    if (dieRoll === 6 || (collidedPiece && !safeSquares.includes(piece.position))) {
+                        game.users.forEach((client) => {
+                            client.ws.send(
+                                JSON.stringify({
+                                    type: "board_event",
+                                    success: true,
+                                    pieces: game.pieces,
+                                    turn: client.turn,
+                                    playMove: false,
+                                })
+                            );
+                        });
+                    } else {
+                        const currentIndex = game.users.indexOf(currentPlayer);
+                        game.users[currentIndex].turn = false;
+                        const nextIndex = (currentIndex + 1) % game.users.length;
+                        game.users[nextIndex].turn = true;
+                        game.users.forEach((client) => {
+                            client.ws.send(
+                                JSON.stringify({
+                                    type: "board_event",
+                                    success: true,
+                                    pieces: game.pieces,
+                                    turn: client.turn,
+                                    playMove: false,
+                                })
+                            );
+                        });
+                    }
+
                     break;
                 }
 
@@ -226,10 +313,12 @@ wss.on("connection", (ws) => {
 
         // Remove the WebSocket from all rooms
         Object.keys(games).forEach((roomId) => {
-            games[roomId].users = games[roomId].users.filter((client) => client.ws !== ws);
+            games[roomId].users.forEach((client) => {
+                if (client.ws === ws) client.isOnline = false
+            });
 
             // Broadcast updated player list to the remaining clients in the room
-            const players = games[roomId].users.map((player) => player.name);
+            const players = games[roomId].users.map((player) => { return { name: player.name, isOnline: player.isOnline } });
             games[roomId].users.forEach((client) => {
                 if (client.ws.readyState === WebSocket.OPEN) {
                     client.ws.send(JSON.stringify({ type: "players", data: players, success: true, isAdmin: client.admin }));
