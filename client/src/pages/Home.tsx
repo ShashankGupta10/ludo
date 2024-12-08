@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useContext, useState } from "react";
 import { DataContext } from "@/context/DataContext";
+import ludoBg from "/ludo-bg.png";
 
 const Home = () => {
   const [roomId, setRoomId] = useState("")
@@ -29,10 +30,12 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div className="w-screen h-screen flex flex-col justify-center gap-16 items-center bg-yellow-500">
+      <img src={ludoBg} alt="" />
+      <div className="flex gap-4">
       <Dialog>
         <DialogTrigger asChild>
-          <Button>Join Room</Button>
+          <Button className="bg-red-600 w-48 animate-bounce text-xl hover:bg-red-500" size={"xl"}>Join Room</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -41,8 +44,8 @@ const Home = () => {
               Enter the room id to join the Game Room.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex items-center space-x-2">
-            <div className="grid flex-1 gap-2">
+          <div className="flex flex-col gap-4 items-center">
+            <div className="grid flex-1 w-full">
               <Label htmlFor="link" className="sr-only">
                 Link
               </Label>
@@ -53,7 +56,7 @@ const Home = () => {
                 onChange={(e) => setRoomId(e.target.value)}
               />
             </div>
-            <div className="grid flex-1 gap-2">
+            <div className="grid flex-1 w-full">
               <Label htmlFor="link" className="sr-only">
                 Name
               </Label>
@@ -77,7 +80,7 @@ const Home = () => {
       </Dialog>
       <Dialog>
         <DialogTrigger asChild>
-          <Button>Create Room</Button>
+          <Button className="bg-blue-700 hover:bg-blue-600 w-48 animate-bounce delay-200 text-xl" size={"xl"}>Create Room</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -108,6 +111,7 @@ const Home = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
     </div>
   );
 };
