@@ -79,7 +79,7 @@ wss.on("connection", (ws) => {
                         ws.send(JSON.stringify({ type: "players", success: false, message: "Maximum of 4 players can play this game" }))
                         break;
                     }
-                    if (games[roomId].isStarted) {
+                    if (games[roomId]?.isStarted) {
                         ws.send(JSON.stringify({ type: "players", success: false, message: "Game has already started" }))
                         break;
                     }
