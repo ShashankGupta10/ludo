@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar } from "@/components/ui/avatar";
+// import { Avatar } from "@/components/ui/avatar";
 import { LUDO_BOARD } from "@/constants/board";
 import { DataContext } from "@/context/DataContext";
 import { WsContext } from "@/context/WsContext";
 import { Dice6 } from 'lucide-react';
 
-const COLORS = ["red", "green", "yellow", "blue"];
+const COLORS = ["red", "blue", "yellow", "green"];
 
 const Board = () => {
   const { data } = useContext(DataContext);
@@ -38,25 +38,22 @@ const Board = () => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-gray-100">
-      <div className="relative w-full max-w-4xl aspect-square bg-white rounded-3xl shadow-2xl p-8">
+    <div className="flex h-screen items-center justify-center bg-gray-100">
+      <div className="relative w-full max-w-3xl aspect-square bg-white rounded-3xl shadow-2xl p-8">
         {/* Player avatars */}
         {data.players?.map((p, index) => (
           <div
             key={index}
             className={`absolute ${
-              index === 0 ? 'top-0 left-0' :
+              index === 0 ? 'top-0 left-[-100px]' :
               index === 1 ? 'top-0 right-0' :
               index === 2 ? 'bottom-0 right-0' :
               'bottom-0 left-0'
-            } m-4`}
+            } m-4 ring-2 ring-offset-2`}
           >
-            <Avatar className={`w-16 h-16 bg-${COLORS[index]}-500 text-white flex justify-center items-center text-2xl font-bold`}>
+            <div className={`w-20 h-20 bg-${COLORS[index]}-500 text-white flex justify-center items-center text-2xl font-bold`}>
               {p.name}
-            </Avatar>
-            {data.turn && data.color === COLORS[index] && (
-              <div className="mt-2 text-center font-bold text-gray-700">Your Turn</div>
-            )}
+            </div>
           </div>
         ))}
 
@@ -104,6 +101,7 @@ const Board = () => {
           onClick={rollDie}
           disabled={rolling || !data.turn}
         >
+          {/* {data.roll === 0 && <Dice6 size={48} className="text-gray-800" />} */}
           <Dice6 
             size={48} 
             className={`text-gray-800 ${data.turn ? 'text-primary' : 'text-gray-400'}`}
