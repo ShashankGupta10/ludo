@@ -81,12 +81,15 @@ wss.on("connection", (ws) => {
                     // if (!games[roomId]) ws.send(JSON.stringify({ type: "players", message: "Room does not exist!" }))
                     if (!games[roomId] || !games[roomId].users) {
                         games[roomId] = {
-                            pieces: PIECES,
+                            pieces: PIECES.slice(0, 4),
                             users: []
                         }
                         games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: true, admin: true, name: playerName, color: colorForUser, isOnline: true }];
                     }
-                    else games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: false, admin: false, name: playerName === "" ? `Player ${games[roomId].users.length + 1}` : playerName, color: colorForUser, isOnline: true }];
+                    else {
+                        games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: false, admin: false, name: playerName === "" ? `Player ${games[roomId].users.length + 1}` : playerName, color: colorForUser, isOnline: true }];
+                        games[roomId].pieces = PIECES.slice(0, games[roomId].users.length * 4);
+                    }
 
                     // Prepare the list of players (could use unique identifiers later)
                     const players = games[roomId]?.users?.map((player) => { return { name: player.name, isOnline: player.isOnline } });
@@ -121,7 +124,7 @@ wss.on("connection", (ws) => {
                     const { gameId } = jsonData
                     const players = games[gameId].users.length
 
-                    if (players === 4) {
+                    if (players > 1) {
                         games[gameId].users.forEach((client) => {
                             if (client.ws.readyState === WebSocket.OPEN) {
                                 client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId, color: client.color, name: client.name }));
@@ -129,7 +132,7 @@ wss.on("connection", (ws) => {
                             }
                         });
                     } else {
-                        ws.send(JSON.stringify({ type: "start_game", success: false, message: "You need 4 players to start a game" }))
+                        ws.send(JSON.stringify({ type: "start_game", success: false, message: "You need more than 1 player to start a game of LUDO" }))
                     }
                     break;
                 }

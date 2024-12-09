@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -18,7 +19,6 @@ const WaitingArea = () => {
   const { websocket } = useContext(WsContext);
   const { data } = useContext(DataContext);
   const { id: gameId } = useParams<{ id: string }>();
-  // const navigate = useNavigate();
   const playerColors = [
     "text-red-500",
     "text-blue-500",
@@ -123,7 +123,7 @@ const WaitingArea = () => {
                 }`}
               >
                 <Play className="mr-2" />
-                {players.length > 2 && players.length < 4 ? "Waiting for Players..." : "Let's Roll!"}
+                {players.length < 2 ? "Waiting for Players..." : "Let's Roll!"}
               </Button>
             </div>
           )}

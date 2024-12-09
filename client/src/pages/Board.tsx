@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 // import { Avatar } from "@/components/ui/avatar";
@@ -54,7 +55,6 @@ const Board = () => {
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <div className="relative w-full max-w-3xl aspect-square bg-white rounded-3xl shadow-2xl p-8">
-        {/* Player avatars */}
         {data.players?.map((p, index) => (
           <div
             key={index}
@@ -107,7 +107,6 @@ const Board = () => {
           ))}
         </div>
 
-        {/* Die */}
         <button
           className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
             bg-white rounded-lg shadow-md p-4 transition-all duration-300 
@@ -115,7 +114,6 @@ const Board = () => {
           onClick={rollDie}
           disabled={rolling || !data.turn}
         >
-          {/* {data.roll === 0 && <Dice6 size={48} className="text-gray-800" />} */}
           <Dice6 
             size={48} 
             className={`text-gray-800 ${data.turn ? 'text-primary' : 'text-gray-400'}`}
