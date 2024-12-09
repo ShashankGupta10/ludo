@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 // import { Avatar } from "@/components/ui/avatar";
 import { LUDO_BOARD } from "@/constants/board";
@@ -7,12 +7,26 @@ import { WsContext } from "@/context/WsContext";
 import { Dice6 } from 'lucide-react';
 
 const COLORS = ["red", "blue", "yellow", "green"];
+const winPosition = {
+  red: "h7",
+  blue: "g8",
+  green: "i8",
+  yellow: "h9"
+}
 
 const Board = () => {
   const { data } = useContext(DataContext);
   const { websocket } = useContext(WsContext);
   const { id: gameId } = useParams();
   const [rolling, setRolling] = useState(false);
+
+  useEffect(() => {
+    // if for a specific color all pieces are at win position, then game is over
+    const isGameOver = data.pieces.filter(piece => piece.color === data.color && piece.position === winPosition[data.color]).length === 4;
+    if (isGameOver) {
+      websocket?.send(JSON.stringify({ type: "game_over", gameId: gameId }));
+    }
+  }, [data.pieces]);
 
   const rollDie = () => {
     if (websocket && websocket.readyState === WebSocket.OPEN && !rolling) {
@@ -46,10 +60,10 @@ const Board = () => {
             key={index}
             className={`absolute ${
               index === 0 ? 'top-0 left-[-100px]' :
-              index === 1 ? 'top-0 right-0' :
-              index === 2 ? 'bottom-0 right-0' :
-              'bottom-0 left-0'
-            } m-4 ring-2 ring-offset-2`}
+              index === 1 ? 'top-0 right-[-100px]' :
+              index === 2 ? 'bottom-0 right-[-100px]' :
+              'bottom-0 left-[-100px]'
+            } m-4 ring-2 ring-${COLORS[index]}-400 ring-offset-2`}
           >
             <div className={`w-20 h-20 bg-${COLORS[index]}-500 text-white flex justify-center items-center text-2xl font-bold`}>
               {p.name}
@@ -75,7 +89,7 @@ const Board = () => {
                       <button
                         key={pieceIndex}
                         className={`piece w-3/4 h-3/4 rounded-full bg-${piece.color}-500 ${
-                          data.playMove && piece.color === data.color
+                          data.playMove && data.turn && piece.color === data.color
                             ? `ring-2 ring-${piece.color}-400 ring-offset-2 cursor-pointer`
                             : ""
                         } transition-all duration-300 ease-in-out transform hover:scale-110`}

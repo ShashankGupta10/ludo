@@ -86,7 +86,7 @@ wss.on("connection", (ws) => {
                         }
                         games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: true, admin: true, name: playerName, color: colorForUser, isOnline: true }];
                     }
-                    else games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: false, admin: false, name: playerName, color: colorForUser, isOnline: true }];
+                    else games[roomId].users = [...(games[roomId]?.users || []), { ws: ws, turn: false, admin: false, name: playerName === "" ? `Player ${games[roomId].users.length + 1}` : playerName, color: colorForUser, isOnline: true }];
 
                     // Prepare the list of players (could use unique identifiers later)
                     const players = games[roomId]?.users?.map((player) => { return { name: player.name, isOnline: player.isOnline } });
@@ -229,7 +229,7 @@ wss.on("connection", (ws) => {
 
                     // Proceed with normal move logic for the selected piece
                     const piece = game.pieces.find((p) => p.home === pieceId && p.color === currentPlayer.color);
-                    if (!piece) {
+                    if (!piece || !movablePieces.includes(piece)) {
                         console.log("INVALID PIECE");
                         ws.send(JSON.stringify({ type: "make_move", success: false, message: "Invalid piece selected." }));
                         break;
@@ -291,6 +291,23 @@ wss.on("connection", (ws) => {
                     }
 
                     break;
+                }
+
+                case "game_over": {
+                    const { gameId } = jsonData
+                    const game = games[gameId]
+                    if (!game) {
+                        ws.send(JSON.stringify({ type: "game_over", success: false, message: "Game not found." }));
+                        break;
+                    }
+
+                    const winner = game.users.find((player) => {
+                        return game.pieces.filter((p) => p.color === player.color && p.position === winPosition[player.color]).length === 4;
+                    });
+
+                    game.users.forEach((client) => {
+                        client.ws.send(JSON.stringify({ type: "game_over", success: true, winner: winner?.name }));
+                    });
                 }
 
                 default:

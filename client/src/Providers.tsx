@@ -17,11 +17,10 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     turn: false,
     roll: 0,
     color: "",
-    playMove: false
+    playMove: false,
   });
 
   useEffect(() => {
-    console.log("RE RENDER");
     if (!websocketRef.current) {
       const wsConnection = new WebSocket("ws://localhost:5000");
       websocketRef.current = wsConnection;
@@ -45,7 +44,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
               localStorage.setItem("color", message.color);
               localStorage.setItem("roomId", message.roomId);
               localStorage.setItem("name", message.name);
-              setData((prevData) => ({ ...prevData, color: message.color }))
+              setData((prevData) => ({ ...prevData, color: message.color }));
               toast.success(message.message);
               navigate(`/board/${message.roomId}`);
             } else toast.error(message.message);
@@ -54,7 +53,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
               ...prevState,
               pieces: message.pieces,
               turn: message.turn,
-              playMove: message.playMove
+              playMove: message.playMove,
             }));
           } else if (message.type === "roll_die") {
             setData((prevState) => ({
@@ -63,7 +62,13 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
               roll: message.roll,
             }));
           } else if (message.type === "make_move") {
-            setData((prevData) => ({ ...prevData,  }))
+            setData((prevData) => ({ ...prevData }));
+          } else if (message.type === "game_over") {
+            toast.success(message.message);
+            localStorage.removeItem("roomId");
+            localStorage.removeItem("color");
+            localStorage.removeItem("name");
+            navigate("/");
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
