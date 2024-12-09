@@ -3,7 +3,6 @@ import { WsContext } from "./context/WsContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DataContext, DataType } from "./context/DataContext";
-// import { Cell } from "./constants/board";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!websocketRef.current) {
-      const wsConnection = new WebSocket("ws://ludo-nh15.onrender.com");
+      const wsConnection = new WebSocket("wss://ludo-nh15.onrender.com");
       websocketRef.current = wsConnection;
 
       wsConnection.onmessage = (ev) => {
@@ -41,9 +40,6 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             }
           } else if (message.type === "start_game") {
             if (message.success) {
-              localStorage.setItem("color", message.color);
-              localStorage.setItem("roomId", message.roomId);
-              localStorage.setItem("name", message.name);
               setData((prevData) => ({ ...prevData, color: message.color }));
               toast.success(message.message);
               navigate(`/board/${message.roomId}`);
@@ -65,9 +61,6 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             setData((prevData) => ({ ...prevData }));
           } else if (message.type === "game_over") {
             toast.success(message.message);
-            localStorage.removeItem("roomId");
-            localStorage.removeItem("color");
-            localStorage.removeItem("name");
             navigate("/");
           }
         } catch (error) {
