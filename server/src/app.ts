@@ -135,6 +135,39 @@ wss.on("connection", (ws) => {
                     const user = games[gameId].users.find(player => player.turn)
 
                     if (user) {
+                        const movablePieces = games[gameId].pieces.filter((piece) => {
+                            if (piece.color !== user.color) return false;
+    
+                            // If the piece is at home, it needs a 6 to move
+                            if (piece.position === piece.home && dieRoll === 6) return true;
+    
+                            // If the piece is on the board, check if it can move without exceeding winPosition
+                            const stepsToWin = calculateStepsToWin(piece.position, winPosition[piece.color], piece.color);
+                            console.log(stepsToWin);
+                            return dieRoll <= stepsToWin;
+                        });
+    
+                        console.log("HERE:", movablePieces);
+    
+                        if (movablePieces.length === 0) {
+                            // No valid moves, skip turn
+                            const currentIndex = games[gameId].users.indexOf(user);
+                            games[gameId].users[currentIndex].turn = false;
+                            const nextIndex = (currentIndex + 1) % games[gameId].users.length;
+                            games[gameId].users[nextIndex].turn = true;
+    
+                            games[gameId].users.forEach((client) => {
+                                client.ws.send(
+                                    JSON.stringify({
+                                        type: "board_event",
+                                        success: true,
+                                        pieces: games[gameId].pieces,
+                                        turn: client.turn,
+                                        playMove: false,
+                                    })
+                                );
+                            });
+                        }
                         if (dieRoll !== 6) {
                             const userPiecesOnHome = games[gameId].pieces.filter(
                                 (p) => p.color === user.color && p.position === p.home
@@ -196,8 +229,6 @@ wss.on("connection", (ws) => {
                         console.log(stepsToWin);
                         return dieRoll <= stepsToWin;
                     });
-
-                    console.log("HERE:", movablePieces);
 
                     if (movablePieces.length === 0) {
                         // No valid moves, skip turn

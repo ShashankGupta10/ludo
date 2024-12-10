@@ -24,7 +24,7 @@ const Home = () => {
   
   const createRoom = async () => {
     const response = await axios.post(
-      "https://ludo-nh15.onrender.com/api/v1/room/create"
+      "http://localhost:5000/api/v1/room/create"
     );
     navigate(`/waiting-area/${response.data.id}`);
   };

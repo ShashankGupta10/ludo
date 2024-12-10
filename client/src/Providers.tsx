@@ -21,7 +21,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!websocketRef.current) {
-      const wsConnection = new WebSocket("wss://ludo-nh15.onrender.com");
+      const wsConnection = new WebSocket("ws://localhost:5000");
       websocketRef.current = wsConnection;
 
       wsConnection.onmessage = (ev) => {
@@ -61,7 +61,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             setData((prevData) => ({ ...prevData }));
           } else if (message.type === "game_over") {
             toast.success(message.message);
-            navigate("/");
+            setTimeout(() => {
+              navigate("/");
+            }, 3000);
           }
         } catch (error) {
           console.error("Error parsing WebSocket message:", error);
