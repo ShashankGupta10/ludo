@@ -21,7 +21,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!websocketRef.current) {
-      const wsConnection = new WebSocket("ws://localhost:5000");
+      const wsConnection = new WebSocket("wss://ludo-nh15.onrender.com");
       websocketRef.current = wsConnection;
 
       wsConnection.onmessage = (ev) => {
