@@ -1,13 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-// import { Avatar } from "@/components/ui/avatar";
+import { useNavigate, useParams } from "react-router-dom";
 import { LUDO_BOARD } from "@/constants/board";
 import { DataContext } from "@/context/DataContext";
 import { WsContext } from "@/context/WsContext";
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const COLORS = ["red", "blue", "yellow", "green"];
 const winPosition = {
   red: "h7",
   blue: "g8",
@@ -16,13 +15,13 @@ const winPosition = {
 };
 
 const Board = () => {
+  const navigate = useNavigate();
   const { data } = useContext(DataContext);
   const { websocket } = useContext(WsContext);
   const { id: gameId } = useParams();
   const [rolling, setRolling] = useState(false);
 
   useEffect(() => {
-    // if for a specific color all pieces are at win position, then game is over
     const isGameOver =
       data.pieces.filter(
         (piece) =>
@@ -33,6 +32,10 @@ const Board = () => {
       websocket?.send(JSON.stringify({ type: "game_over", gameId: gameId }));
     }
   }, [data.pieces]);
+
+  useEffect(() => {
+    if (!data.players) navigate("/")
+  }, []);
 
   const rollDie = () => {
     if (websocket && websocket.readyState === WebSocket.OPEN && !rolling) {
@@ -57,29 +60,24 @@ const Board = () => {
     websocket?.send(JSON.stringify(movePieceData));
   };
 
+  if (!data.players) return null;
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="relative w-full max-w-3xl aspect-square bg-white rounded-3xl shadow-2xl p-8">
-        {data.players?.map((p, index) => (
-          <div
-            key={index}
-            className={`absolute ${
-              index === 0
-                ? "top-0 left-[-100px]"
-                : index === 1
-                ? "top-0 right-[-100px]"
-                : index === 2
-                ? "bottom-0 right-[-100px]"
-                : "bottom-0 left-[-100px]"
-            } m-4 ring-2 ring-${COLORS[index]}-400 ring-offset-2`}
-          >
-            <div
-              className={`w-20 h-20 bg-${COLORS[index]}-500 text-white flex justify-center items-center text-2xl font-bold`}
-            >
-              {p.name}
-            </div>
-          </div>
-        ))}
+    <div className="flex h-screen items-center justify-center scale-75 lg:scale-90 xl:scale-100">
+      <div className="relative w-full max-w-3xl aspect-square bg-white rounded-3xl shadow-2xl p-4 lg:p-8">
+        <div className="absolute flex items-center top-[-75px] left-0 flex-row-reverse md:flex-row md:top-12 md:left-[-100px] transform md:-translate-x-1/2 gap-2">
+          <span>{data.players[0].name.length > 5 && window.innerWidth < 768 ? data.players[0].name.slice(0, 5) + "...": data.players[0].name}</span>
+          <Avatar>
+            <AvatarImage src="https://cdn-icons-png.flaticon.com/512/10412/10412528.png" alt="@shadcn" />
+            <AvatarFallback>{data.players[0].name[0]}</AvatarFallback>
+          </Avatar>
+        </div>
+        <div className="absolute flex items-center gap-2 top-[-75px] right-0 md:top-12 md:right-[-150px] transform -translate-x-1/2x">
+          <Avatar>
+            <AvatarImage src="https://cdn-icons-png.flaticon.com/512/10412/10412528.png" alt="@shadcn" />
+            <AvatarFallback>{data.players[1].name[0]}</AvatarFallback>
+          </Avatar>
+          <span>{data.players[1].name.length > 5 && window.innerWidth < 768 ? data.players[1].name.slice(0, 5) + "...": data.players[1].name}</span>
+        </div>
 
         {/* Ludo board */}
         <div className="board flex flex-col gap-1 w-full h-full">
@@ -88,8 +86,8 @@ const Board = () => {
               {row.map((square, idx) => (
                 <div
                   key={idx}
-                  className={`flex-1 flex items-center justify-center border border-gray-300 ${
-                    square.color ? `bg-${square.color}-200` : "bg-gray-50"
+                  className={`relative flex-1 flex items-center justify-center rounded-lg border border-gray-300 ${
+                    square.color ? `bg-${square.color}-200`: "bg-gray-50"
                   } ${square.safe ? "ring-2 ring-yellow-400" : ""}`}
                 >
                   {square.safe && (
@@ -102,13 +100,12 @@ const Board = () => {
                     .map((piece, pieceIndex) => (
                       <button
                         key={pieceIndex}
-                        className={`piece w-3/4 h-3/4 rounded-full bg-${
-                          piece.color
-                        }-500 ${
+                        className={`piece w-3/4 h-3/4 rounded-full bg-${piece.color}-500 
+                        ${
                           data.playMove &&
                           data.turn &&
                           piece.color === data.color
-                            ? `ring-2 ring-${data.color}-400 ring-offset-2 cursor-pointer`
+                            ? `ring-2 ring-${piece.color}-400 ring-offset-2 cursor-pointer`
                             : ""
                         } transition-all duration-300 ease-in-out transform hover:scale-110`}
                         title={`Piece (${piece.color})`}
@@ -117,17 +114,36 @@ const Board = () => {
                           piece.color === data.color &&
                           movePiece(piece.home)
                         }
-                      />
+                      ></button>
                     ))}
                 </div>
               ))}
             </div>
           ))}
         </div>
+        {data.players[2] && (
+          <div className="absolute flex items-center bottom-[-75px] left-0 flex-row-reverse md:flex-row md:bottom-12 md:left-[-100px] transform md:-translate-x-1/2 gap-2">
+            <span>{data.players[2].name.length > 5 && window.innerWidth < 768 ? data.players[2].name.slice(0, 5) + "...": data.players[2].name}</span>
+            <Avatar>
+              <AvatarImage src="https://cdn-icons-png.flaticon.com/512/10412/10412528.png" alt="@shadcn" />
+              <AvatarFallback>{data.players[2].name[0]}</AvatarFallback>
+            </Avatar>
+          </div>
+        )}
+        {data.players[3] && (
+          <div className="absolute flex items-center gap-2 bottom-[-75px] right-0 md:bottom-12 md:right-[-150px] transform -translate-x-1/2x">
+            <Avatar>
+              <AvatarImage src="https://cdn-icons-png.flaticon.com/512/10412/10412528.png" alt="@shadcn" />
+              <AvatarFallback>{data.players[3]?.name}</AvatarFallback>
+            </Avatar>
+            <span>{data.players[3].name.length > 5 && window.innerWidth < 768 ? data.players[3].name.slice(0, 5) + "...": data.players[3].name}</span>
+          </div>
+        )}
 
+        {/* Dice Button */}
         <button
-          className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
-            bg-white rounded-lg shadow-md p-4 transition-all duration-300 
+          className={`absolute top-1/2 left-1/2 transform scale-50 md:scale-75 lg:scale-90 xl:scale-100 -translate-x-1/2 -translate-y-1/2 
+            bg-white rounded-lg shadow-md p-4 transition-all duration-300 ${data.turn && !data.playMove ? "ring-4 ring-black animate-pulse duration-1000": ""}
             ${
               rolling
                 ? "animate-spin cursor-not-allowed"
@@ -136,69 +152,19 @@ const Board = () => {
           onClick={rollDie}
           disabled={rolling || !data.turn}
         >
-          {data.roll === 6 && (
-            <Dice6
-              size={48}
-              className={`text-gray-800 ${
-                data.turn ? "text-primary" : "text-gray-400"
-              }`}
-            />
-          )}
-          {data.roll === 5 && (
-            <Dice5
-              size={48}
-              className={`text-gray-800 ${
-                data.turn ? "text-primary" : "text-gray-400"
-              }`}
-            />
-          )}
-          {data.roll === 4 && (
-            <Dice4
-              size={48}
-              className={`text-gray-800 ${
-                data.turn ? "text-primary" : "text-gray-400"
-              }`}
-            />
-          )}
-          {data.roll === 3 && (
-            <Dice3
-              size={48}
-              className={`text-gray-800 ${
-                data.turn ? "text-primary" : "text-gray-400"
-              }`}
-            />
-          )}
-          {data.roll === 2 && (
-            <Dice2
-              size={48}
-              className={`text-gray-800 ${
-                data.turn ? "text-primary" : "text-gray-400"
-              }`}
-            />
-          )}
-          {data.roll === 1 && (
-            <Dice1
-              size={48}
-              className={`text-gray-800 ${
-                data.turn ? "text-primary" : "text-gray-400"
-              }`}
-            />
-          )}
-          {data.roll === 0 && (
-            <Dice6
-              size={48}
-              className={`text-gray-800 ${
-                data.turn ? "text-primary" : "text-gray-400"
-              }`}
-            />
-          )}
-          
+          {data.roll === 6 && <Dice6 size={48} className="text-gray-800" />}
+          {data.roll === 5 && <Dice5 size={48} className="text-gray-800" />}
+          {data.roll === 4 && <Dice4 size={48} className="text-gray-800" />}
+          {data.roll === 3 && <Dice3 size={48} className="text-gray-800" />}
+          {data.roll === 2 && <Dice2 size={48} className="text-gray-800" />}
+          {data.roll === 1 && <Dice1 size={48} className="text-gray-800" />}
+          {data.roll === 0 && <Dice6 size={48} className="text-gray-800" />}
         </button>
 
-        {/* Roll result */}
+        {/* Roll Result */}
         {data.roll !== 0 && (
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-md">
-            {data.name} rolled {data.roll}
+          <div className="absolute bottom-[-30px] md:bottom-[-10px] left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow-md">
+            {data.name.length > 5 ? data.name.slice(0, 5) + "...": data.name} rolled {data.roll}
           </div>
         )}
       </div>
