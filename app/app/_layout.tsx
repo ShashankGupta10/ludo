@@ -28,8 +28,10 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack>
+      <Stack initialRouteName='index'>
         <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="waiting-area" options={{ headerShown: false }} />
+        <Stack.Screen name="board" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

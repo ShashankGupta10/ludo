@@ -105,10 +105,10 @@ const Board = () => {
                           data.playMove &&
                           data.turn &&
                           piece.color === data.color
-                            ? `ring-2 ring-${piece.color}-400 ring-offset-2 cursor-pointer`
+                            ? `ring-2 ring-${data.color}-400 ring-offset-2 cursor-pointer`
                             : ""
                         } transition-all duration-300 ease-in-out transform hover:scale-110`}
-                        title={`Piece (${piece.color})`}
+                        title={`Piece (${data.color})`}
                         onClick={() =>
                           data.playMove &&
                           piece.color === data.color &&
