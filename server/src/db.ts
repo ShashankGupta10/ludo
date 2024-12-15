@@ -1,6 +1,6 @@
 import { Piece } from "./constants/board"
 import WebSocket from "ws"
-enum Color {
+export enum Color {
     red = "red",
     blue = "blue",
     green = "green",

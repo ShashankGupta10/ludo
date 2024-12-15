@@ -16,6 +16,7 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { DataContext } from "@/context/DataContext";
 import ludoBg from "/ludo-bg.png";
+import { HTTP_SERVER_URL } from "@/config";
 
 const Home = () => {
   const [roomId, setRoomId] = useState("")
@@ -24,7 +25,7 @@ const Home = () => {
   
   const createRoom = async () => {
     const response = await axios.post(
-      "https://ludo-nh15.onrender.com/api/v1/room/create"
+      `${HTTP_SERVER_URL}/api/v1/room/create`
     );
     navigate(`/waiting-area/${response.data.id}`);
   };

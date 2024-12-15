@@ -3,6 +3,7 @@ import { WsContext } from "./context/WsContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DataContext, DataType } from "./context/DataContext";
+import { WEBSOCKET_SERVER_URL } from "./config";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (!websocketRef.current) {
-      const wsConnection = new WebSocket("wss://ludo-nh15.onrender.com");
+      const wsConnection = new WebSocket(WEBSOCKET_SERVER_URL);
       websocketRef.current = wsConnection;
 
       wsConnection.onmessage = (ev) => {

@@ -4,6 +4,7 @@ import axios from "axios";
 import { DataContext } from "@/context/DataContext";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "react-native-screens/native-stack";
+import { HTTP_SERVER_URL } from "@/config";
 
 const Home = () => {
   const [roomId, setRoomId] = useState("");
@@ -13,8 +14,8 @@ const Home = () => {
   const navigation = useNavigation();
 
   const createRoom = async () => {
-    const response = await axios.post("https://ludo-nh15.onrender.com/api/v1/room/create");
-    navigation.navigate("WaitingArea", { roomId: response.data.id });
+    const response = await axios.post(`${HTTP_SERVER_URL}/api/v1/room/create`);
+    // navigation.navigate("WaitingArea", { roomId: response.data.id });
   };
 
   return (
@@ -66,7 +67,7 @@ const Home = () => {
                 className="bg-gray-800 px-4 py-2 rounded-lg"
                 onPress={() => {
                   setJoinModalVisible(false);
-                  navigation.navigate("WaitingArea", { roomId });
+                  // navigation.navigate("WaitingArea", { roomId });
                 }}
               >
                 <Text className="text-white font-bold">Join Room</Text>

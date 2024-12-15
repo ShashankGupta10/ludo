@@ -1,13 +1,6 @@
 import { WebSocket as WsWebSocketType } from "ws"
 import { LUDO_BOARD, Piece, PIECES } from "../constants/board"
-import { GameData, games } from "../db"
-
-enum Color {
-    red = "red",
-    blue = "blue",
-    green = "green",
-    yellow = "yellow"
-}
+import { Color, GameData, games } from "../db"
 
 const winPosition = {
     red: "h7",
@@ -50,7 +43,7 @@ export class GameManager {
         const game = games[this.gameId]
         const user: UserData = {
             ws: ws,
-            name: name === "" ? `Player ${game?.users.length ? game.users.length + 1: 1}`: name,
+            name: name === "" ? `Player ${game?.users.length ? game.users.length + 1 : 1}` : name,
             color: color,
             admin: admin,
             isOnline: true,
@@ -125,5 +118,11 @@ export class GameManager {
             collidedPiece.position = collidedPiece.home;
         }
         return (collidedPiece && !safeSquares.includes(piece.position))
+    }
+
+    public checkWinner(game: GameData) {
+        return game.users.find((player) => {
+            return game.pieces.filter((p) => p.color === player.color && p.position === winPosition[player.color]).length === 4;
+        });
     }
 }
