@@ -1,40 +1,53 @@
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import "../global.css";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import React, { useEffect } from "react";
+import Providers from "./Providers";
 
-import 'react-native-reanimated';
+import "../global.css"; // Ensure this works correctly with your setup
+import "react-native-reanimated";
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  const [fontsLoaded] = useFonts({
+    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontsLoaded]);
 
-  if (!loaded) {
-    return null;
+  if (!fontsLoaded) {
+    // Show fallback UI while fonts are loading
+    return (
+      <ThemeProvider value={DefaultTheme}>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    );
   }
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack initialRouteName='index'>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="waiting-area" options={{ headerShown: false }} />
-        <Stack.Screen name="board" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <Providers>
+        <Stack initialRouteName="index">
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="waiting-area/[id]/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="board/[id]/page"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </Providers>
     </ThemeProvider>
   );
 }

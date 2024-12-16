@@ -16,7 +16,7 @@ export const startGame = (jsonData: any, ws: WebSocket) => {
         game.users.forEach((client) => {
             if (client.ws.readyState === WebSocket.OPEN) {
                 client.ws.send(JSON.stringify({ type: "start_game", success: true, message: "Game started successfully! Good luck", roomId: gameId, color: client.color }));
-                client.ws.send(JSON.stringify({ type: "board_event", success: true, pieces: games[gameId]?.pieces, turn: client.turn }));
+                client.ws.send(JSON.stringify({ type: "board_event", success: true, pieces: game.pieces, turn: client.turn }));
             }
         });
     } else ws.send(JSON.stringify({ type: "start_game", success: false, message: "You need more than 1 player to start a game of LUDO" }))
