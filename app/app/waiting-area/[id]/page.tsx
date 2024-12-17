@@ -17,7 +17,7 @@ const WaitingArea = () => {
   const startGame = () => {
     const startGameData = {
       type: "start_game",
-      gameId,
+      gameId: gameId,
     };
     websocket?.send(JSON.stringify(startGameData));
   };
