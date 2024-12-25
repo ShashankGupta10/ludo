@@ -1,5 +1,5 @@
 import http from "http";
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import roomRouter from "./routes/room.route";
 import { config } from "dotenv";
@@ -15,7 +15,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use("/api/v1/room", roomRouter);
-
+app.get("/", (_: Request, res: Response) => {
+    res.send("Pinged the ludo server");
+})
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 

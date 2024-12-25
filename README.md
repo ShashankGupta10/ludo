@@ -20,6 +20,7 @@ A web-based multiplayer **LUDO Game** to recreate the classic board game experie
 ## Tech Stack 🛠️
 
 - **Frontend:** React.js
+- **App:** React Native
 - **Backend:** Node.js/Express.js
 - **Database:** PostgreSQL
 - **Real-Time Communication:** WebSockets
@@ -71,7 +72,3 @@ We welcome contributions to improve the game! To contribute:
 ## License 📜
 
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-### Enjoy the game and roll your way to victory! 🏆
-
-`Feel free to customize this to include any specifics about your project setup or any other unique features you’ve implemented`
